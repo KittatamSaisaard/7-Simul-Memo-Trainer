@@ -40,6 +40,105 @@ body {
   background-color: red;
   transform: translate(50px,-10px);
 }
+.one {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(30deg);
+  transform-origin: 5px 65px;
+}
+.two {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(60deg);
+  transform-origin: 5px 65px;
+}
+.three {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(90deg);
+  transform-origin: 5px 65px;
+}
+.four {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(120deg);
+  transform-origin: 5px 65px;
+}
+.five {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(150deg);
+  transform-origin: 5px 65px;
+}
+.six {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(180deg);
+  transform-origin: 5px 65px;
+}
+.seven {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(210deg);
+  transform-origin: 5px 65px;
+}
+.eight {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(240deg);
+  transform-origin: 5px 65px;
+}
+.nine {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(270deg);
+  transform-origin: 5px 65px;
+}
+.ten {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(300deg);
+  transform-origin: 5px 65px;
+}
+.eleven {
+  aspect-ratio: 1/1;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  transform: translate(50px, -10px) rotate(330deg);
+  transform-origin: 5px 65px;
+}
 .u {
   left: 140px;
 }

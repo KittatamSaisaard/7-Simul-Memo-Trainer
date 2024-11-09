@@ -115,7 +115,8 @@ function scramble() {
   if(side=="white"){
     for(let i=0; i<9; i++){
       document.querySelectorAll(".dial")[i].style.transform = "translate(50px, 2px) rotate("+random[i]*30+"deg)";
-      document.querySelectorAll(".twelve")[i].style.transform = "translate(50px,-10px)";
+      document.querySelectorAll(".twelve")[i].style.backgroundColor = "red";
+      document.querySelectorAll(".six")[i].style.backgroundColor = "white";
     }
   }
   if(side=="black"){
@@ -127,7 +128,8 @@ function scramble() {
     document.querySelector(".ul.dial").style.transform = "translate(50px, 2px) rotate("+(random[6]+6)*-30+"deg)";
     document.querySelector(".ur.dial").style.transform = "translate(50px, 2px) rotate("+(random[8]+6)*-30+"deg)";
     for(let i=0; i<9; i++){
-      document.querySelectorAll(".twelve")[i].style.transform = "translate(50px,110px)"
+      document.querySelectorAll(".six")[i].style.backgroundColor = "red";
+      document.querySelectorAll(".twelve")[i].style.backgroundColor = "white";
     }
   }
 }
