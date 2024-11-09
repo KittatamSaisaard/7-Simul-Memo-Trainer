@@ -115,8 +115,19 @@ function scramble() {
   if(side=="white"){
     for(let i=0; i<9; i++){
       document.querySelectorAll(".dial")[i].style.transform = "translate(50px, 2px) rotate("+random[i]*30+"deg)";
-      document.querySelectorAll(".twelve")[i].style.backgroundColor = "red";
+      document.querySelectorAll(".one")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".two")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".three")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".four")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".five")[i].style.backgroundColor = "white";
       document.querySelectorAll(".six")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".seven")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".eight")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".nine")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".ten")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".eleven")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".twelve")[i].style.backgroundColor = "red";
+
     }
   }
   if(side=="black"){
@@ -128,8 +139,18 @@ function scramble() {
     document.querySelector(".ul.dial").style.transform = "translate(50px, 2px) rotate("+(random[6]+6)*-30+"deg)";
     document.querySelector(".ur.dial").style.transform = "translate(50px, 2px) rotate("+(random[8]+6)*-30+"deg)";
     for(let i=0; i<9; i++){
+      document.querySelectorAll(".one")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".two")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".three")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".four")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".five")[i].style.backgroundColor = "black";
       document.querySelectorAll(".six")[i].style.backgroundColor = "red";
-      document.querySelectorAll(".twelve")[i].style.backgroundColor = "white";
+      document.querySelectorAll(".seven")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".eight")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".nine")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".ten")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".eleven")[i].style.backgroundColor = "black";
+      document.querySelectorAll(".twelve")[i].style.backgroundColor = "black";
     }
   }
 }
