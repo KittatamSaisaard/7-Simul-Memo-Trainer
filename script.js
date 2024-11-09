@@ -385,6 +385,11 @@ document.querySelector("#ryan").addEventListener("click", function() {
     l = ["0","1","2","3","4","5","6","E","D","C","B","A"];
   }
 });
+document.querySelector("#numbers").addEventListener("click", function() {
+  if (true) {
+    l = ["0","1","2","3","4","5","6","-5","-4","-3","-2","-1"];
+  }
+});
 document.querySelector("#executionTrainer").addEventListener("click", function() {
   if (document.querySelector("#executionTrainer").checked) {
     executionMode=true
