@@ -278,20 +278,22 @@ function checkMemo() {
       }
     }
   }
+
   //BPaul
-  if(document.getElementById('bpaul').checked){
+  if(document.getElementById('bpaul').checked && document.getElementById('bpaulmemo').checked){
     realMemo = realMemo[1] + realMemo[0] + realMemo.slice(2);
     realMemo = realMemo.slice(0, 4) + realMemo.slice(5);
     realMemo = realMemo.slice(0, 8) + realMemo.slice(9);
     realMemo = realMemo.replace(/\s/g, "");
     realMemo = realMemo.match(/.{1,2}/g).join(" ");
+    realMemo = realMemo + " ";
   }
 
-  if(memo.slice(0, -1)==realMemo){
+  if(memo==realMemo){
     alert("Correct!")
   }
   else{
-    alert(`Your memo: ${memo.toUpperCase().slice(0, -1)}\nCorrect memo: ${realMemo}`);
+    alert(`Your memo: ${memo.toUpperCase()}\nCorrect memo: ${realMemo}`);
   }
 }
 
@@ -459,6 +461,11 @@ document.querySelector('#change').addEventListener("click",  function() {
   changePinOrder(true);
 });
 document.querySelector('#bpaul').addEventListener("click",  function() {
+  if(document.getElementById('bpaul').checked) {
+    document.getElementById('bpaulmemoelement').style.display = "block";
+  } else {
+    document.getElementById('bpaulmemoelement').style.display = "none";
+  }
   changePinOrder(false);
 });
 
