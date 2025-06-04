@@ -131,32 +131,65 @@ function scramble() {
     }
   }
   if(side=="black"){
-    for(let i=0; i<5; i++){
-      document.querySelectorAll(".center")[i].style.transform = "translate(50px, 2px) rotate("+(random[i+9]+6)*30+"deg)";
-    }
-    document.querySelector(".dl.dial").style.transform = "translate(50px, 2px) rotate("+(random[0]+6)*-30+"deg)";
-    document.querySelector(".dr.dial").style.transform = "translate(50px, 2px) rotate("+(random[2]+6)*-30+"deg)";
-    document.querySelector(".ul.dial").style.transform = "translate(50px, 2px) rotate("+(random[6]+6)*-30+"deg)";
-    document.querySelector(".ur.dial").style.transform = "translate(50px, 2px) rotate("+(random[8]+6)*-30+"deg)";
-    for(let i=0; i<9; i++){
-      document.querySelectorAll(".one")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".two")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".three")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".four")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".five")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".six")[i].style.backgroundColor = "red";
-      document.querySelectorAll(".seven")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".eight")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".nine")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".ten")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".eleven")[i].style.backgroundColor = "black";
-      document.querySelectorAll(".twelve")[i].style.backgroundColor = "black";
+    if(document.getElementById('bpaul').checked){
+      for (let i = 0; i < 5; i++) {
+        document.querySelectorAll(".center")[i].style.transform = "translate(50px, 2px) rotate("+(random[13-i])*30 +"deg)";
+      }
+      document.querySelector(".dl.dial").style.transform = "translate(50px, 2px) rotate("+(random[8])*-30+"deg)";
+      document.querySelector(".dr.dial").style.transform = "translate(50px, 2px) rotate("+(random[6])*-30+"deg)";
+      document.querySelector(".ul.dial").style.transform = "translate(50px, 2px) rotate("+(random[2])*-30+"deg)";
+      document.querySelector(".ur.dial").style.transform = "translate(50px, 2px) rotate("+(random[0])*-30+"deg)";
+      for(let i=0; i<9; i++){
+        document.querySelectorAll(".one")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".two")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".three")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".four")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".five")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".six")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".seven")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".eight")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".nine")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".ten")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".eleven")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".twelve")[i].style.backgroundColor = "red";
+      }
+    } else {
+      for(let i=0; i<5; i++){
+        document.querySelectorAll(".center")[i].style.transform = "translate(50px, 2px) rotate("+(random[i+9]+6)*30+"deg)";
+      }
+      document.querySelector(".dl.dial").style.transform = "translate(50px, 2px) rotate("+(random[0]+6)*-30+"deg)";
+      document.querySelector(".dr.dial").style.transform = "translate(50px, 2px) rotate("+(random[2]+6)*-30+"deg)";
+      document.querySelector(".ul.dial").style.transform = "translate(50px, 2px) rotate("+(random[6]+6)*-30+"deg)";
+      document.querySelector(".ur.dial").style.transform = "translate(50px, 2px) rotate("+(random[8]+6)*-30+"deg)";
+      for(let i=0; i<9; i++){
+        document.querySelectorAll(".one")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".two")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".three")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".four")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".five")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".six")[i].style.backgroundColor = "red";
+        document.querySelectorAll(".seven")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".eight")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".nine")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".ten")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".eleven")[i].style.backgroundColor = "black";
+        document.querySelectorAll(".twelve")[i].style.backgroundColor = "black";
+      }
     }
   }
 }
 
-function changePinOrder() {
-  let input = prompt("enter pin order, for example: dl R DR \\ UL L ur")
+function changePinOrder(change) {
+  //Tommy's
+  let input = "dl R DR \\ UL L ur";
+
+  if(change == true){
+    input = prompt("enter pin order, for example: dl R DR \\ UL L ur");
+  } else if(document.getElementById('bpaul').checked){
+    //BPaul's
+    input = "dl R DR ur L UL \\";
+  }
+
   output = checkPinOrder(input)
   if(output != false){
     order = [output[0].split(" "),output[1].split(" "),output[2]];
@@ -165,20 +198,48 @@ function changePinOrder() {
     const container = document.getElementById('pairs');
     container.innerHTML = "select which moves to memo:"
     for (const item of items) {
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.value = item;
-      input.id = item;
+      const pins = document.createElement('input');
+      pins.type = 'checkbox';
+      //Tommy's
+      if(input == "dl R DR \\ UL L ur") {
+        switch (item) {
+          case "dl": case "R": case "\\":   
+            pins.checked = true;
+            break;
+          default:
+            break;
+        }
+      }
+      //BPaul's
+      if(input == "dl R DR ur L UL \\") {
+        switch (item) {
+          case "dl": case "R": case "ur": case "L":  
+            pins.checked = true;
+            break;
+          default:
+            break;
+        }
+      }
+      pins.value = item;
+      pins.id = item;
       const label = document.createElement('label');
       label.htmlFor = item;
       label.innerText = item;
-      container.appendChild(input);
+      container.appendChild(pins);
       container.appendChild(label);
     }
-    alert("pin order changed!");
+    
+    if(input == "dl R DR \\ UL L ur"){
+      alert("Pin order changed to Tommy's!");
+    } else if(input == "dl R DR ur L UL \\"){
+      alert("Pin order changed to BPaul's!");
+    } else {
+      alert("Pin order changed!");
+    }
+    
   }
   else{
-    alert("that's not a pin order! please try again.");
+    alert("That's not a pin order! Please try again.");
   }
 }
 function checkPinOrder(input) {
@@ -217,11 +278,20 @@ function checkMemo() {
       }
     }
   }
-  if(memo==realMemo){
-    alert("correct!")
+  //BPaul
+  if(document.getElementById('bpaul').checked){
+    realMemo = realMemo[1] + realMemo[0] + realMemo.slice(2);
+    realMemo = realMemo.slice(0, 4) + realMemo.slice(5);
+    realMemo = realMemo.slice(0, 8) + realMemo.slice(9);
+    realMemo = realMemo.replace(/\s/g, "");
+    realMemo = realMemo.match(/.{1,2}/g).join(" ");
+  }
+
+  if(memo.slice(0, -1)==realMemo){
+    alert("Correct!")
   }
   else{
-    alert(`Your memo: ${memo.toUpperCase()}\nCorrect memo: ${realMemo}`);
+    alert(`Your memo: ${memo.toUpperCase().slice(0, -1)}\nCorrect memo: ${realMemo}`);
   }
 }
 
@@ -386,7 +456,10 @@ document.querySelector('#enterscramble').addEventListener("click", function() {
 });
 document.querySelector('#change').addEventListener("click",  function() {
   document.querySelector('#change').blur()
-  changePinOrder();
+  changePinOrder(true);
+});
+document.querySelector('#bpaul').addEventListener("click",  function() {
+  changePinOrder(false);
 });
 
 function toggleVisibility() {

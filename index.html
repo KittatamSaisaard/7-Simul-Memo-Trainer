@@ -8,35 +8,39 @@
 </head>
 <body>
   <h1><u>7 Simul Memo Trainer</u></h1>
-  pin order: <span id=pinOrder>dl R DR \ UL L ur</span> <button id="change">change</button>
-  <div id="pairs">
-    select which moves to memo:
-    <input type="checkbox" value="dl" id="dl" checked="checked">
-    <label for="dl">dl</label>
-    <input type="checkbox" value="R" id="R" checked="checked">
-    <label for="R">R</label>
-    <input type="checkbox" value="DR" id="DR">
-    <label for="DR">DR</label>
-    <input type="checkbox" value="\" id="\" checked="checked">
-    <label for="\">\</label>
-    <input type="checkbox" value="UL" id="UL">
-    <label for="UL">UL</label>
-    <input type="checkbox" value="L" id="L">
-    <label for="L">L</label>
-    <input type="checkbox" value="ur" id="ur">
-    <label for="ur">ur</label></div>
+  <div>
+    <label for="bpaul">Toggle BPaul/Tommy</label>
+    <input type="checkbox" id="bpaul" checked="checked">
   </div>
-  <button onclick="checkMemo()">check memo</button>
+  Pin order: <span id=pinOrder>dl R DR ur L UL \</span> <button id="change">Change</button>
+<div id="pairs">
+  Select which moves to memo:
+  <input type="checkbox" value="dl" id="dl" checked>
+  <label for="dl">dl</label>
+  <input type="checkbox" value="R" id="R" checked>
+  <label for="R">R</label>
+  <input type="checkbox" value="DR" id="DR">
+  <label for="DR">DR</label>
+  <input type="checkbox" value="ur" id="ur" checked>
+  <label for="ur">ur</label>
+  <input type="checkbox" value="L" id="L" checked>
+  <label for="L">L</label>
+  <input type="checkbox" value="UL" id="UL">
+  <label for="UL">UL</label>
+  <input type="checkbox" value="\" id="\">
+  <label for="\">\</label>
+</div>
+  <button onclick="checkMemo()">Check memo</button>
   <div id="udselect"></div>
   <input id="mobileInput" placeholder="Enter memo here"></input>
-  <h1 id="memo">memo:</h1>
+  <h1 id="memo">Memo:</h1>
   <div id="underScramble">
-    <h2 id="scramble"><span id="scramblebox">press s or click here to scramble</span></h2>
-    <br><button id="enterscramble">enter scramble</button>
-    <p id="info"><b>info:</b><br><span id="bigText">To use, enter your memo as if you were to start execution with the white dials facing you. This means that if you are using the order shown in Tommy and Caleb's videos, you must do an x2 and start memo on the black dials.</span><br>memo 1-12 as A-L<br><b>controls:</b><br>space or click on clock: x2 or click<br>s or click on scramble: scramble<br><button onclick="checkMemo()">enter or click here: check memo</button><br><br></p>
-    <button onclick="toggleVisibility()">more settings</button>
+    <h2 id="scramble"><span id="scramblebox">Press S or click here to scramble</span></h2>
+    <br><button id="enterscramble">Enter scramble</button>
+    <p id="info"><b>Info:</b><br><span id="bigText">To use, enter your memo as if you were to start execution with the white dials facing you. This means that if you are using the order shown in Tommy and Caleb's videos, you must do an x2 and start memo on the black dials.</span><br>Memo 1-12 as A-L<br><b>Controls:</b><br>Space or click on clock: x2 or click<br>S or click on scramble: scramble<br><button onclick="checkMemo()">Enter or click here: check memo</button><br><br></p>
+    <button onclick="toggleVisibility()">More settings</button>
     <div id="hiddenSettings">
-      <b>memo input type:</b>
+      <b>Memo input type:</b>
       <input type="radio" value="letters" id="letters" name="memoType" checked="checked">
       <label for="letters">Letters (A-L for 1-12)</label>
       <input type="radio" value="ryan" id="ryan" name="memoType">
@@ -47,7 +51,7 @@
       <label for="tommy">Tommy (1-6 is A-F and -5 to -1 is G-K, 0 is O)</label><br>
       <i>if you want the option for just numbers 1-12 lmk, but for now I won't add it because since 11 and 12 are two digits I'd have to rework how the memo is entered</i><br>
       <input type="checkbox" value="executionTrainer" id="executionTrainer">
-      <label for="executionTrainer"><b>execution trainer mode:</b> when checked the memo will be automatically given so you can practice execution.</label><br><br>
+      <label for="executionTrainer"><b>Execution trainer mode:</b> when checked the memo will be automatically given so you can practice execution.</label><br><br>
     </div>
   </div>
   <div id="clock">    
