@@ -3,19 +3,27 @@ body {
   font-family:Arial;
   color: white;
 }
-#underScramble {
+#title {
+ text-align: center;
+ margin-top: 0;
+}
+#memo{
+  margin-bottom: 0;
+}
+#underClock {
   position: absolute;
-  top: 630px;
+  top: 460px;
 }
 #hiddenSettings {
   display: none;
 }
 #clock {
   position: absolute;
-  top: 240px;
-  height: 390px;
-  width: 390px;
-  left: 5%;
+  top: 60px;
+  left: 50%;
+  /* width: 390px;
+  height: 390px; */
+  margin-left: -195px;
 }
 .circle {
   aspect-ratio: 1/1;
@@ -171,4 +179,26 @@ body {
   font-size: 25px;
   font-weight: bold;
   color: red;
+}
+#letterButtons {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  max-width: 400px;
+  margin: 10px auto;
+  padding: 10px;
+}
+
+#letterButtons button {
+  font-size: 1.2em;
+  padding: 15px 0;
+  border: none;
+  border-radius: 10px;
+  background-color: #444;
+  color: white;
+}
+
+button {
+  font-size: 16px;
+  touch-action: manipulation;
 }
