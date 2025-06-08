@@ -16,6 +16,7 @@ let regexp = /android|iphone|kindle|ipad/i;
 let isMobileDevice = regexp.test(details);
 if (!isMobileDevice) {
   document.querySelector("#letterButtons").style.display = "none";
+  document.querySelector("#inputButtons").checked = false;
 }
 
 document.querySelector("#customPin").style.display = 'none';
@@ -233,10 +234,10 @@ function changePinOrder(change) {
 
     switch (simultype) {
       case 'BPaul':
-        alert("Pin order changed to BPaul's!");
+        alert("Pin order changed to BPaul!");
         break;
       case 'Tommy':
-        alert("Pin order changed to Tommy's!");
+        alert("Pin order changed to Tommy!");
         break;   
       default:
         alert("Pin order changed to Custom!");
@@ -516,6 +517,14 @@ document.querySelector("#executionTrainer").addEventListener("click", function()
   }
   else{
     executionMode=false
+  }
+});
+document.querySelector("#inputButtons").addEventListener("click", function() {
+  if (document.querySelector("#inputButtons").checked) {
+    document.querySelector("#letterButtons").style.display = "grid";
+  }
+  else{
+    document.querySelector("#letterButtons").style.display = "none";
   }
 });
 
