@@ -29,6 +29,7 @@ let order = [output[0].split(" "),output[1].split(" "),output[2]];
 
 document.addEventListener("keydown", function onEvent(event) {
   if (event.key === " ") {
+    event.preventDefault();
     flip();
   }
   else if (event.key === "s") {
