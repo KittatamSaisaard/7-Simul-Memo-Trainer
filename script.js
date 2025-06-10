@@ -116,8 +116,10 @@ function flip() {
 }
 
 function scramble() {
-  resetTimer();
-  startTimer();
+  if(document.querySelector("#timerButton").checked){
+    resetTimer();
+    startTimer();
+  }
   if(side=="white"){
     for(let i=0; i<9; i++){
       document.querySelectorAll(".dial")[i].style.transform = "translate(50px, 2px) rotate("+random[i]*30+"deg)";
