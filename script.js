@@ -35,7 +35,6 @@ document.addEventListener("keydown", function onEvent(event) {
   else if (event.key === "s") {
     scrambletext = `UR${formatScramble(Math.floor(Math.random() * 12)-5)} DR${formatScramble(Math.floor(Math.random() * 12)-5)} DL${formatScramble(Math.floor(Math.random() * 12)-5)} UL${formatScramble(Math.floor(Math.random() * 12)-5)} U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} y2 U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} ${pinpositions[Math.floor(Math.random() * 16)]}`
     random = scrambleconvert(scrambletext);
-    console.log(random);
     document.querySelector("#scramblebox").innerText = scrambletext;
     memo="";
     if (executionMode == false){
@@ -59,7 +58,7 @@ document.addEventListener("keydown", function onEvent(event) {
           }
         }
       }
-      document.querySelector("#memo").innerText=realMemo;
+      document.querySelector("#memo").innerText="Memo: " + realMemo;
     }
     scramble();
   }
@@ -442,7 +441,6 @@ document.querySelector('#enterscramble').addEventListener("click", function() {
   document.querySelector('#enterscramble').blur()
   enteredscramble = prompt("Enter Scramble:")
   random = scrambleconvert(enteredscramble)
-  console.log(random);
   if (executionMode == false){
     document.querySelector("#memo").innerText="Memo: ";
   }
@@ -464,7 +462,7 @@ document.querySelector('#enterscramble').addEventListener("click", function() {
         }
       }
     }
-    document.querySelector("#memo").innerText=realMemo;
+    document.querySelector("#memo").innerText="Memo: " + realMemo;
   }
   scramble(); 
   document.querySelector("#scramblebox").innerText = enteredscramble;
@@ -538,7 +536,6 @@ document.querySelector("#inputButtons").addEventListener("click", function() {
 function clickScramble() {
   scrambletext = `UR${formatScramble(Math.floor(Math.random() * 12)-5)} DR${formatScramble(Math.floor(Math.random() * 12)-5)} DL${formatScramble(Math.floor(Math.random() * 12)-5)} UL${formatScramble(Math.floor(Math.random() * 12)-5)} U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} y2 U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} ${pinpositions[Math.floor(Math.random() * 16)]}`
   random = scrambleconvert(scrambletext);
-  console.log(random);
   document.querySelector("#scramblebox").innerText = scrambletext;
   memo="";
   if (executionMode == false){
@@ -573,7 +570,7 @@ function clickScramble() {
       realMemo = realMemo + " ";
     }
     
-    document.querySelector("#memo").innerText=realMemo;
+    document.querySelector("#memo").innerText="Memo: " + realMemo;
   }
   scramble();
 }
@@ -627,7 +624,7 @@ function updateLetterButtons(newLabels) {
         if ([2, 5, 8, 11, 14, 17].includes(memo.length)) {
           memo += " ";
         }
-        document.querySelector("#memo").innerText = "Memo: " + memo;
+        document.querySelector("#memo").innerText ="Memo: " + memo;
       });
 
       btn.replaceWith(newBtn);
