@@ -188,21 +188,22 @@ body {
   margin: 10px auto;
   padding: 10px;
 }
-
-#letterButtons button {
+#letterButtons button, #letterButtons #timer {
   font-size: 1.2em;
   padding: 15px 0;
   border: none;
   border-radius: 10px;
   background-color: #444;
   color: white;
+  text-align: center;
 }
-
+#letterButtons #timer {
+  grid-column: 5 / span 2;
+  display: none;
+  margin-bottom: 0;
+  margin-top : 0;
+}
 button {
   font-size: 16px;
   touch-action: manipulation;
-}
-
-#timer {
-  display: none;
 }

@@ -530,6 +530,7 @@ document.querySelector("#inputButtons").addEventListener("click", function() {
   else{
     document.querySelector("#letterButtons").style.display = "none";
   }
+  changeTimerLocation();
 });
 
 function clickScramble() {
@@ -669,13 +670,32 @@ scrambleBtn.addEventListener('click', () => {
 buttonContainer.appendChild(scrambleBtn);
 
 document.querySelector("#timerButton").addEventListener("click", function() {
+  changeTimerLocation();
+});
+
+function changeTimerLocation() {
   if (document.querySelector("#timerButton").checked) {
+    const timerElement = document.createElement('h2');
+    timerElement.id = "timer";
+    const timer = document.getElementById("timer");
+    const timerHolder = document.getElementById("timerholder");
+    if(document.querySelector("#inputButtons").checked) {
+      if (timerHolder && timerHolder.contains(timer)) {
+        timerHolder.removeChild(timer);
+      }
+      buttonContainer.appendChild(timerElement);
+    }else {
+      if (buttonContainer.contains(timer)) {
+        buttonContainer.removeChild(timer);
+      }
+      timerHolder.appendChild(timerElement);
+    }
     document.querySelector("#timer").style.display = "block";
   }
   else{
     document.querySelector("#timer").style.display = "none";
   }
-});
+}
 
 // All the code for the timer
 let timerInterval;
@@ -696,6 +716,15 @@ function updateTimerFrame() {
   if (isRunning) {
     const elapsedTime = performance.now() - startTime;
     seconds = elapsedTime / 1000;
+
+    // Cap to stop timer overflowing
+    if (seconds >= 999) {
+      seconds = 999.99;
+      updateTimer();
+      stopTimer();
+      return;
+    }
+
     updateTimer();
     timerInterval = requestAnimationFrame(updateTimerFrame);
   }
