@@ -33,34 +33,7 @@ document.addEventListener("keydown", function onEvent(event) {
     flip();
   }
   else if (event.key === "s") {
-    scrambletext = `UR${formatScramble(Math.floor(Math.random() * 12)-5)} DR${formatScramble(Math.floor(Math.random() * 12)-5)} DL${formatScramble(Math.floor(Math.random() * 12)-5)} UL${formatScramble(Math.floor(Math.random() * 12)-5)} U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} y2 U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} ${pinpositions[Math.floor(Math.random() * 16)]}`
-    random = scrambleconvert(scrambletext);
-    document.querySelector("#scramblebox").innerText = scrambletext;
-    memo="";
-    if (executionMode == false){
-      document.querySelector("#memo").innerText="Memo: ";
-    }
-    else{
-      let realMemo = "";
-      for(let i of order[0]){
-        if(document.getElementById(i).checked){
-          let c=0;
-          let c2=0;
-          for(let z=0; z<14; z++){
-            c+=random[z]*matrices[order[2]][order[1].indexOf(i)*2][z]
-            c2+=random[z]*matrices[order[2]][order[1].indexOf(i)*2+1][z]
-          }
-          if(["ur","dr","UL","DL","L","\\"].includes(i) || (i=="U" && document.querySelector("#umove").value=="left") || (i=="D" && document.querySelector("#dmove").value=="left")){
-            realMemo += l[(c+144)%12] + l[(c2+144)%12] + " ";
-          }
-          else{
-            realMemo += l[(c2+144)%12] + l[(c+144)%12] + " ";
-          }
-        }
-      }
-      document.querySelector("#memo").innerText="Memo: " + realMemo;
-    }
-    scramble();
+    clickScramble();
   }
   else if(event.key === "Backspace" && realMemo==false){
     if([3,6,9,12,15,18].includes(memo.length)){
@@ -75,7 +48,7 @@ document.addEventListener("keydown", function onEvent(event) {
     checkMemo();
   }
   else{
-    if(((event.key.charCodeAt(0)>=97 && event.key.charCodeAt(0) <= 108) || (event.key.charCodeAt(0)>=48 && event.key.charCodeAt(0) <= 57)) && executionMode==false){
+    if(((event.key.charCodeAt(0)>=97 && event.key.charCodeAt(0) <= 108) || (event.key.charCodeAt(0)>=48 && event.key.charCodeAt(0) <= 57) || event.key.charCodeAt(0) == 111 ) && executionMode==false){
       if(memo.length<20){
         memo+=event.key.toUpperCase();
       }
@@ -84,8 +57,7 @@ document.addEventListener("keydown", function onEvent(event) {
       }
       document.querySelector("#memo").innerText="Memo: "+memo;
     }
-  }  
-  
+  }
 });
 
 function formatScramble(num) {
@@ -115,10 +87,6 @@ function flip() {
 }
 
 function scramble() {
-  if(document.querySelector("#timerButton").checked){
-    resetTimer();
-    startTimer();
-  }
   if(side=="white"){
     for(let i=0; i<9; i++){
       document.querySelectorAll(".dial")[i].style.transform = "translate(50px, 2px) rotate("+random[i]*30+"deg)";
@@ -138,7 +106,7 @@ function scramble() {
     }
   }
   if(side=="black"){
-    if(simultype == 'BPaul'){
+    if(simultype == 'BPaul'){ // y2 Flip
       for (let i = 0; i < 5; i++) {
         document.querySelectorAll(".center")[i].style.transform = "translate(50px, 2px) rotate("+(random[13-i])*30 +"deg)";
       }
@@ -160,7 +128,7 @@ function scramble() {
         document.querySelectorAll(".eleven")[i].style.backgroundColor = "black";
         document.querySelectorAll(".twelve")[i].style.backgroundColor = "red";
       }
-    } else {
+    } else { // x2 Flip
       for(let i=0; i<5; i++){
         document.querySelectorAll(".center")[i].style.transform = "translate(50px, 2px) rotate("+(random[i+9]+6)*30+"deg)";
       }
@@ -559,18 +527,12 @@ function clickScramble() {
         }
       }
     }
-
-    //BPaul
-    if(simultype == 'BPaul'){
-      realMemo = realMemo[1] + realMemo[0] + realMemo.slice(2);
-      realMemo = realMemo.slice(0, 4) + realMemo.slice(5);
-      realMemo = realMemo.slice(0, 8) + realMemo.slice(9);
-      realMemo = realMemo.replace(/\s/g, "");
-      realMemo = realMemo.match(/.{1,2}/g).join(" ");
-      realMemo = realMemo + " ";
-    }
     
     document.querySelector("#memo").innerText="Memo: " + realMemo;
+  }
+  if(document.querySelector("#timerButton").checked){
+    resetTimer();
+    startTimer();
   }
   scramble();
 }
