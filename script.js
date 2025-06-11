@@ -5,7 +5,6 @@ let scrambletext = "";
 let memo = "";
 let realMemo = "";
 let enteredscramble = "";
-let pinpositions = ["UR", "UL", "DR", "DL", "UR DR DL UL", "UR DR DL", "UR DR UL", "UR DL UL", "DR DL UL", "DR UL", "UR DL", "UR DR", "DL UL", "UR UL", "DR DL", ""]
 let l = ["L","A","B","C","D","E","F","G","H","I","J","K"];
 let executionMode = false
 let simultype = 'BPaul';
@@ -434,6 +433,7 @@ document.querySelector('#enterscramble').addEventListener("click", function() {
   }
   scramble(); 
   document.querySelector("#scramblebox").innerText = enteredscramble;
+  scrambletext = enteredscramble;
 });
 document.querySelector('#change').addEventListener("click",  function() {
   document.querySelector('#change').blur()
@@ -502,7 +502,7 @@ document.querySelector("#inputButtons").addEventListener("click", function() {
 });
 
 function clickScramble() {
-  scrambletext = `UR${formatScramble(Math.floor(Math.random() * 12)-5)} DR${formatScramble(Math.floor(Math.random() * 12)-5)} DL${formatScramble(Math.floor(Math.random() * 12)-5)} UL${formatScramble(Math.floor(Math.random() * 12)-5)} U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} y2 U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} ${pinpositions[Math.floor(Math.random() * 16)]}`
+  scrambletext = `UR${formatScramble(Math.floor(Math.random() * 12)-5)} DR${formatScramble(Math.floor(Math.random() * 12)-5)} DL${formatScramble(Math.floor(Math.random() * 12)-5)} UL${formatScramble(Math.floor(Math.random() * 12)-5)} U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} y2 U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)}`
   random = scrambleconvert(scrambletext);
   document.querySelector("#scramblebox").innerText = scrambletext;
   memo="";
@@ -538,7 +538,7 @@ function clickScramble() {
 }
 
 document.querySelector("#scramble").addEventListener("click", function() {
- clickScramble(); 
+  copyScramble();
 });
 
 document.querySelector("#clock").addEventListener("click", function() {
@@ -565,6 +565,7 @@ rotatedLabels.forEach(letter => {
   buttonContainer.appendChild(btn);
 });
 
+// Create/Update memo letter buttons
 function updateLetterButtons(newLabels) {
   const buttons = document.querySelectorAll("#letterButtons button");
 
@@ -594,6 +595,23 @@ function updateLetterButtons(newLabels) {
   });
 }
 
+// Check memo button
+const checkBtn = document.createElement('button');
+checkBtn.textContent = '✓';
+checkBtn.addEventListener('click', () => {
+  checkMemo();
+});
+buttonContainer.appendChild(checkBtn);
+
+// Scramble button
+const scrambleBtn = document.createElement('button');
+scrambleBtn.textContent = '🔀';
+scrambleBtn.addEventListener('click', () => {
+  clickScramble();
+});
+buttonContainer.appendChild(scrambleBtn);
+
+// Delete single memo button
 const clearBtn = document.createElement('button');
 clearBtn.textContent = '⌫';
 clearBtn.addEventListener('click', () => {
@@ -607,28 +625,18 @@ clearBtn.addEventListener('click', () => {
 });
 buttonContainer.appendChild(clearBtn);
 
-const clearMemoBtn = document.createElement('button');
-clearMemoBtn.textContent = '🗑';
-clearMemoBtn.addEventListener('click', () => {
-  memo = "";
-  document.querySelector("#memo").innerText="Memo: "+memo;
-});
-buttonContainer.appendChild(clearMemoBtn);
+function copyScramble () {
+  navigator.clipboard.writeText(scrambletext);
+  alert("Copied scramble to clipboard!");
+}
 
-
-const checkBtn = document.createElement('button');
-checkBtn.textContent = '✓';
-checkBtn.addEventListener('click', () => {
-  checkMemo();
+// Copy memo button
+const copyScrambleBtn = document.createElement('button');
+copyScrambleBtn.textContent = '📋';
+copyScrambleBtn.addEventListener('click', () => {
+  copyScramble();
 });
-buttonContainer.appendChild(checkBtn);
-
-const scrambleBtn = document.createElement('button');
-scrambleBtn.textContent = '🔀';
-scrambleBtn.addEventListener('click', () => {
-  clickScramble();
-});
-buttonContainer.appendChild(scrambleBtn);
+buttonContainer.appendChild(copyScrambleBtn);
 
 document.querySelector("#timerButton").addEventListener("click", function() {
   changeTimerLocation();
