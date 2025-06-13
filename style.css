@@ -207,3 +207,6 @@ button {
   font-size: 16px;
   touch-action: manipulation;
 }
+#scramble:hover, #clock:hover, button:hover, select:hover, input:hover{
+  cursor: pointer;
+}
