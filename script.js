@@ -409,6 +409,27 @@ function convertToBPaulIfNeeded(realMemo){
   return realMemo;
 }
 
+function createMemo(random){
+  let realMemo = "";
+  for(let i of order[0]){
+    if(document.getElementById(i).checked){
+      let c=0;
+      let c2=0;
+      for(let z=0; z<14; z++){
+        c+=random[z]*matrices[order[2]][order[1].indexOf(i)*2][z]
+        c2+=random[z]*matrices[order[2]][order[1].indexOf(i)*2+1][z]
+      }
+      if(["ur","dr","UL","DL","L","\\"].includes(i) || (i=="U" && document.querySelector("#umove").value=="left") || (i=="D" && document.querySelector("#dmove").value=="left")){
+        realMemo += l[(c+144)%12] + l[(c2+144)%12] + " ";
+      }
+      else{
+        realMemo += l[(c2+144)%12] + l[(c+144)%12] + " ";
+      }
+    }
+  }
+  document.querySelector("#memo").innerText="Memo: " + convertToBPaulIfNeeded(realMemo);
+}
+
 document.querySelector('#enterscramble').addEventListener("click", function() {
   document.querySelector('#enterscramble').blur()
   enteredscramble = prompt("Enter Scramble:")
@@ -417,29 +438,12 @@ document.querySelector('#enterscramble').addEventListener("click", function() {
     document.querySelector("#memo").innerText="Memo: ";
   }
   else{
-    let realMemo = "";
-    for(let i of order[0]){
-      if(document.getElementById(i).checked){
-        let c=0;
-        let c2=0;
-        for(let z=0; z<14; z++){
-          c+=random[z]*matrices[order[2]][order[1].indexOf(i)*2][z]
-          c2+=random[z]*matrices[order[2]][order[1].indexOf(i)*2+1][z]
-        }
-        if(["ur","dr","UL","DL","L","\\"].includes(i) || (i=="U" && document.querySelector("#umove").value=="left") || (i=="D" && document.querySelector("#dmove").value=="left")){
-          realMemo += l[(c+144)%12] + l[(c2+144)%12] + " ";
-        }
-        else{
-          realMemo += l[(c2+144)%12] + l[(c+144)%12] + " ";
-        }
-      }
-    }
-
-    document.querySelector("#memo").innerText="Memo: " + convertToBPaulIfNeeded(realMemo);
+    createMemo(random);
   }
   renderScramble(); 
   document.querySelector("#scramblebox").innerText = enteredscramble;
   scrambletext = enteredscramble;
+  restartTimer();
 });
 document.querySelector('#change').addEventListener("click",  function() {
   document.querySelector('#change').blur()
@@ -492,9 +496,11 @@ document.querySelector("#tommy").addEventListener("click", function() {
 document.querySelector("#executionTrainer").addEventListener("click", function() {
   if (document.querySelector("#executionTrainer").checked) {
     executionMode=true
+    createMemo(random);
   }
   else{
     executionMode=false
+    document.querySelector("#memo").innerText="Memo: ";
   }
 });
 document.querySelector("#inputButtons").addEventListener("click", function() {
@@ -506,6 +512,14 @@ document.querySelector("#inputButtons").addEventListener("click", function() {
   }
   changeTimerLocation();
 });
+document.querySelector("#hourIndicators").addEventListener("click", function() {
+  if (document.querySelector("#hourIndicators").checked) {
+    document.querySelector("#hourIndicatorsElement").style.display = "none";
+  }
+  else{
+    document.querySelector("#hourIndicatorsElement").style.display = "block";
+  }
+});
 
 function scramble() {
   scrambletext = `UR${formatScramble(Math.floor(Math.random() * 12)-5)} DR${formatScramble(Math.floor(Math.random() * 12)-5)} DL${formatScramble(Math.floor(Math.random() * 12)-5)} UL${formatScramble(Math.floor(Math.random() * 12)-5)} U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} y2 U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)}`
@@ -516,29 +530,10 @@ function scramble() {
     document.querySelector("#memo").innerText="Memo: ";
   }
   else{
-    let realMemo = "";
-    for(let i of order[0]){
-      if(document.getElementById(i).checked){
-        let c=0;
-        let c2=0;
-        for(let z=0; z<14; z++){
-          c+=random[z]*matrices[order[2]][order[1].indexOf(i)*2][z]
-          c2+=random[z]*matrices[order[2]][order[1].indexOf(i)*2+1][z]
-        }
-        if(["ur","dr","UL","DL","L","\\"].includes(i) || (i=="U" && document.querySelector("#umove").value=="left") || (i=="D" && document.querySelector("#dmove").value=="left")){
-          realMemo += l[(c+144)%12] + l[(c2+144)%12] + " ";
-        }
-        else{
-          realMemo += l[(c2+144)%12] + l[(c+144)%12] + " ";
-        }
-      }
-    }
-
-    document.querySelector("#memo").innerText="Memo: " + convertToBPaulIfNeeded(realMemo);
+    createMemo(random);
   }
   if(document.querySelector("#timerButton").checked){
-    resetTimer();
-    startTimer();
+    restartTimer();
   }
   renderScramble();
 }
@@ -646,6 +641,7 @@ buttonContainer.appendChild(copyScrambleBtn);
 
 document.querySelector("#timerButton").addEventListener("click", function() {
   changeTimerLocation();
+  restartTimer();
 });
 
 function changeTimerLocation() {
@@ -716,4 +712,8 @@ function resetTimer() {
   seconds = 0;
   updateTimer();
 }
-startTimer()
+
+function restartTimer(){
+  resetTimer();
+  startTimer();
+}
