@@ -32,18 +32,18 @@ document.addEventListener("keydown", function onEvent(event) {
     flip();
   }
   else if (event.key === "s") {
-    clickScramble();
+    scramble();
   }
-  else if(event.key === "Backspace" && realMemo==false){
+  else if(event.key === "Backspace" && realMemo == false){
     if([3,6,9,12,15,18].includes(memo.length)){
       memo=memo.slice(0,-2);
     }
     else{
       memo = memo.slice(0, -1);
     }
-    document.querySelector("#memo").innerText="Memo: "+memo;
+    document.querySelector("#memo").innerText="Memo: "+ memo;
   }
-  else if(event.key === "Enter" && executionMode==false){
+  else if(event.key === "Enter" && executionMode == false){
     checkMemo();
   }
   else{
@@ -54,7 +54,7 @@ document.addEventListener("keydown", function onEvent(event) {
       if([2,5,8,11,14,17].includes(memo.length)){
         memo+=" ";
       }
-      document.querySelector("#memo").innerText="Memo: "+memo;
+      document.querySelector("#memo").innerText="Memo: "+ memo;
     }
   }
 });
@@ -82,10 +82,10 @@ function flip() {
   for(let i of document.querySelectorAll(".dial")){
     i.style.backgroundColor = dial;
   }
-  scramble();
+  renderScramble();
 }
 
-function scramble() {
+function renderScramble() {
   if(side=="white"){
     for(let i=0; i<9; i++){
       document.querySelectorAll(".dial")[i].style.transform = "translate(50px, 2px) rotate("+random[i]*30+"deg)";
@@ -257,15 +257,7 @@ function checkMemo() {
     }
   }
 
-  //BPaul
-  if(simultype == 'BPaul'){
-    realMemo = realMemo[1] + realMemo[0] + realMemo.slice(2);
-    realMemo = realMemo.slice(0, 4) + realMemo.slice(5);
-    realMemo = realMemo.slice(0, 8) + realMemo.slice(9);
-    realMemo = realMemo.replace(/\s/g, "");
-    realMemo = realMemo.match(/.{1,2}/g).join(" ");
-    realMemo = realMemo + " ";
-  }
+  realMemo = convertToBPaulIfNeeded(realMemo);
 
   if(memo==realMemo){
     alert("Correct!")
@@ -404,6 +396,19 @@ function scrambleconvert(s) {
   return n.map(num => (num+144) % 12);
 }
 
+function convertToBPaulIfNeeded(realMemo){
+  if(simultype == 'BPaul'){
+    realMemo = realMemo[1] + realMemo[0] + realMemo.slice(2);
+    realMemo = realMemo.slice(0, 4) + realMemo.slice(5);
+    realMemo = realMemo.slice(0, 8) + realMemo.slice(9);
+    realMemo = realMemo.replace(/\s/g, "");
+    realMemo = realMemo.match(/.{1,2}/g).join(" ");
+    realMemo = realMemo + " ";
+    return realMemo;
+  }
+  return realMemo;
+}
+
 document.querySelector('#enterscramble').addEventListener("click", function() {
   document.querySelector('#enterscramble').blur()
   enteredscramble = prompt("Enter Scramble:")
@@ -429,9 +434,10 @@ document.querySelector('#enterscramble').addEventListener("click", function() {
         }
       }
     }
-    document.querySelector("#memo").innerText="Memo: " + realMemo;
+
+    document.querySelector("#memo").innerText="Memo: " + convertToBPaulIfNeeded(realMemo);
   }
-  scramble(); 
+  renderScramble(); 
   document.querySelector("#scramblebox").innerText = enteredscramble;
   scrambletext = enteredscramble;
 });
@@ -501,7 +507,7 @@ document.querySelector("#inputButtons").addEventListener("click", function() {
   changeTimerLocation();
 });
 
-function clickScramble() {
+function scramble() {
   scrambletext = `UR${formatScramble(Math.floor(Math.random() * 12)-5)} DR${formatScramble(Math.floor(Math.random() * 12)-5)} DL${formatScramble(Math.floor(Math.random() * 12)-5)} UL${formatScramble(Math.floor(Math.random() * 12)-5)} U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} y2 U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)}`
   random = scrambleconvert(scrambletext);
   document.querySelector("#scramblebox").innerText = scrambletext;
@@ -527,14 +533,14 @@ function clickScramble() {
         }
       }
     }
-    
-    document.querySelector("#memo").innerText="Memo: " + realMemo;
+
+    document.querySelector("#memo").innerText="Memo: " + convertToBPaulIfNeeded(realMemo);
   }
   if(document.querySelector("#timerButton").checked){
     resetTimer();
     startTimer();
   }
-  scramble();
+  renderScramble();
 }
 
 document.querySelector("#scramble").addEventListener("click", function() {
@@ -560,7 +566,7 @@ rotatedLabels.forEach(letter => {
       if([2,5,8,11,14,17].includes(memo.length)){
         memo+=" ";
       }
-      document.querySelector("#memo").innerText="Memo: "+memo;
+      document.querySelector("#memo").innerText="Memo: "+ memo;
   });
   buttonContainer.appendChild(btn);
 });
@@ -607,7 +613,7 @@ buttonContainer.appendChild(checkBtn);
 const scrambleBtn = document.createElement('button');
 scrambleBtn.textContent = '🔀';
 scrambleBtn.addEventListener('click', () => {
-  clickScramble();
+  scramble();
 });
 buttonContainer.appendChild(scrambleBtn);
 
@@ -621,7 +627,7 @@ clearBtn.addEventListener('click', () => {
     else{
       memo = memo.slice(0, -1);
     }
-    document.querySelector("#memo").innerText="Memo: "+memo;
+    document.querySelector("#memo").innerText="Memo: "+ memo;
 });
 buttonContainer.appendChild(clearBtn);
 
