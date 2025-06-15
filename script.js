@@ -151,6 +151,7 @@ function renderScramble() {
       }
     }
   }
+  renderHourElements();
 }
 
 function changePinOrder(change) {
@@ -464,6 +465,7 @@ document.querySelector('#simultype').addEventListener('change', function () {
       break;
   }
   changePinOrder(false);
+  renderScramble();
 });
 
 function toggleVisibility() {
@@ -512,13 +514,31 @@ document.querySelector("#inputButtons").addEventListener("click", function() {
   }
   changeTimerLocation();
 });
-document.querySelector("#hourIndicators").addEventListener("click", function() {
-  if (document.querySelector("#hourIndicators").checked) {
-    document.querySelector("#hourIndicatorsElement").style.display = "none";
+
+function renderHourElements(){
+  const shouldHide = document.querySelector("#hourIndicators").checked;
+  let hourElementsTwelve = document.querySelectorAll(".twelve");
+  let hourElements = document.querySelectorAll(
+    ".one, .two, .three, .four, .five, .six, .seven, .eight, .nine, .ten, .eleven"
+  );
+
+  if(simultype != 'BPaul' && side == 'black') {
+    hourElementsTwelve = document.querySelectorAll(".six");
+    hourElements = document.querySelectorAll(
+    ".one, .two, .three, .four, .five, .seven, .eight, .nine, .ten, .eleven, .twelve"
+    );
   }
-  else{
-    document.querySelector("#hourIndicatorsElement").style.display = "block";
-  }
+
+  hourElements.forEach(function (el) {
+    el.style.display = shouldHide ? "none" : "block";
+  });
+  hourElementsTwelve.forEach(function (el) {
+    el.style.display = "block";
+  });
+}
+
+document.querySelector("#hourIndicators").addEventListener("click", function () {
+  renderHourElements();
 });
 
 function scramble() {
@@ -712,7 +732,6 @@ function resetTimer() {
   seconds = 0;
   updateTimer();
 }
-
 function restartTimer(){
   resetTimer();
   startTimer();
