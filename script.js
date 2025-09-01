@@ -207,13 +207,13 @@ function changePinOrder(change) {
 
     switch (simultype) {
       case 'BPaul':
-        alert("Pin order changed to BPaul!");
+        alert("Pin order changed to BPaul!\nFlip type is set to y2");
         break;
       case 'Tommy':
-        alert("Pin order changed to Tommy!");
+        alert("Pin order changed to Tommy!\nFlip type is set to x2");
         break;   
       default:
-        alert("Pin order changed to Custom!");
+        alert("Pin order changed to Custom!\nFlip type is set to x2");
         break;
     }
     
@@ -557,6 +557,14 @@ document.querySelector('#flipType').addEventListener('change', function () {
     flip();
   }
   flipType = this.value;
+  switch (flipType) {
+    case 'x2':
+      alert("Flip type changed to x2!");
+      break;
+    case 'y2':
+      alert("Flip type changed to y2!");
+      break;   
+  }
 });
 
 function scramble() {
