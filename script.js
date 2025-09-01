@@ -8,6 +8,7 @@ let enteredscramble = "";
 let l = ["L","A","B","C","D","E","F","G","H","I","J","K"];
 let executionMode = false
 let simultype = 'BPaul';
+let flipType = 'y2';
 document.querySelector("#executionTrainer").checked=false
 
 let details = navigator.userAgent;
@@ -105,7 +106,7 @@ function renderScramble() {
     }
   }
   if(side=="black"){
-    if(simultype == 'BPaul'){ // y2 Flip
+    if(flipType == 'y2'){ // y2 Flip
       for (let i = 0; i < 5; i++) {
         document.querySelectorAll(".center")[i].style.transform = "translate(50px, 2px) rotate("+(random[13-i])*30 +"deg)";
       }
@@ -453,16 +454,26 @@ document.querySelector('#change').addEventListener("click",  function() {
 
 document.querySelector('#simultype').addEventListener('change', function () {
   simultype = this.value;
+  const flipSelect = document.getElementById("flipType");
   switch (simultype) {
     case 'BPaul':
+      flipSelect.value = 'y2';
+      flipType = 'y2';
       document.querySelector("#customPin").style.display = 'none';
       break;
     case 'Tommy':
+      flipSelect.value = 'x2';
+      flipType = 'x2';
       document.querySelector("#customPin").style.display = 'none';
       break;   
     default:
+      flipSelect.value = 'x2';
+      flipType = 'x2';
       document.querySelector("#customPin").style.display = 'block';
       break;
+  }
+  if(side == 'black'){
+    flip();
   }
   changePinOrder(false);
   renderScramble();
@@ -539,6 +550,13 @@ function renderHourElements(){
 
 document.querySelector("#hourIndicators").addEventListener("click", function () {
   renderHourElements();
+});
+
+document.querySelector('#flipType').addEventListener('change', function () {
+  if(side == 'black'){
+    flip();
+  }
+  flipType = this.value;
 });
 
 function scramble() {
