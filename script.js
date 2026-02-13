@@ -48,7 +48,15 @@ document.addEventListener("keydown", function onEvent(event) {
     checkMemo();
   }
   else{
-    if(((event.key.charCodeAt(0)>=97 && event.key.charCodeAt(0) <= 108) || (event.key.charCodeAt(0)>=48 && event.key.charCodeAt(0) <= 57) || event.key.charCodeAt(0) == 111 ) && executionMode==false){
+  if (
+    event.key.length === 1 &&
+    (
+      (event.key >= 'a' && event.key <= 'l') ||
+      (event.key >= 'A' && event.key <= 'L') ||
+      (event.key >= '0' && event.key <= '9') ||
+       event.key === 'o' ||
+       event.key === 'O'
+    ) && executionMode==false){
       if(memo.length<20){
         memo+=event.key.toUpperCase();
       }
