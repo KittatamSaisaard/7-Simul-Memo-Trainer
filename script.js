@@ -270,10 +270,14 @@ function checkMemo() {
   realMemo = convertToBPaulIfNeeded(realMemo);
 
   if(memo==realMemo){
-    alert("Correct!")
+    document.querySelector("#correctMemo").style.color = "green";
+    document.querySelector("#memo").style.color = "white";
+    document.querySelector("#correctMemo").innerText ="Correct!"
   }
   else{
-    alert(`Your memo: ${memo.toUpperCase()}\nCorrect memo: ${realMemo}`);
+    document.querySelector("#correctMemo").style.color = "white";
+    document.querySelector("#memo").style.color = "red";
+    document.querySelector("#correctMemo").innerText=`Correct memo: ${realMemo}`;  
   }
   stopTimer();
 }
