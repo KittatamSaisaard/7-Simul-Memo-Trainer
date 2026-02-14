@@ -15,7 +15,7 @@ body {
 }
 #underClock {
   position: absolute;
-  top: 460px;
+  top: calc(var(--circle-size) * (460 / 110));;
 }
 #hiddenSettings {
   display: none;
