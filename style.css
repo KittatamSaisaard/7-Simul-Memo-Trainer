@@ -8,14 +8,19 @@ body {
 }
 #title {
  text-align: center;
- margin-top: 0;
+ margin: 0;
+ font-size: calc(var(--circle-size) * (25 / 110));
 }
-#memo{
+#correctMemo {
+  margin-bottom: 0;
+}
+#memo {
+  margin-top: 0;
   margin-bottom: 0;
 }
 #underClock {
   position: absolute;
-  top: calc(var(--circle-size) * (460 / 110));;
+  top: calc(var(--circle-size) * (475 / 110));;
 }
 #hiddenSettings {
   display: none;
