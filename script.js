@@ -231,6 +231,7 @@ function changePinOrder(change) {
   else{
     alert("That's not a pin order! Please try again.");
   }
+  handleCreateMemo();
 }
 function checkPinOrder(input) {
   let sortedInput = input.split(" ").slice().sort();
@@ -447,6 +448,20 @@ function createMemo(random){
   document.querySelector("#memo").innerText="Memo: " + convertToBPaulIfNeeded(realMemo);
 }
 
+function handleCreateMemo() {
+  if (executionMode === true) {
+    createMemo(random);
+  }
+}
+
+document.querySelector('#pairs').addEventListener("click", function() {
+  handleCreateMemo();
+});
+
+document.querySelector("#udselect").addEventListener('click', function () {
+  handleCreateMemo();
+});
+
 document.querySelector('#enterscramble').addEventListener("click", function() {
   document.querySelector('#enterscramble').blur()
   enteredscramble = prompt("Enter Scramble:")
@@ -479,6 +494,10 @@ document.querySelector('#simultype').addEventListener('change', function () {
   }
 
   changeSimultype(simultype);
+
+  if(executionMode === true) {
+    createMemo(random);
+  }
 });
 
 function changeSimultype(simultype) {
