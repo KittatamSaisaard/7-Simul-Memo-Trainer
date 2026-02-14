@@ -1,3 +1,6 @@
+:root {
+  --circle-size: min(20vw, 110px);
+}
 body {
   background-color: rgb(70, 70, 70);
   font-family:Arial;
@@ -21,159 +24,244 @@ body {
   position: absolute;
   top: 60px;
   left: 50%;
-  /* width: 390px;
-  height: 390px; */
-  margin-left: -195px;
+  margin-left: calc(var(--circle-size) * (-195 / 110));
 }
 .circle {
   aspect-ratio: 1/1;
-  width: 110px;
+  width: var(--circle-size);
   border-radius: 50%;
   position: absolute;
   background-color: white;
 }
-.dial {
+.dial{
   background-color: black;
-  width: 10px;
-  height: 53px;
+  width: calc(var(--circle-size) * (10 / 110));
+  height: calc(var(--circle-size) * (53 / 110));
   position: absolute;
   transform-origin: center bottom;
-  transform: translate(50px, 2px);
+
+  --tx: calc(var(--circle-size) * (50 / 110));
+  --ty: calc(var(--circle-size) * (2 / 110));
+
+  --rot: 0deg;
+
+  transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
 }
 .twelve {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
   background-color: red;
-  transform: translate(50px,-10px);
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  );
 }
 .one {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(30deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(30deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .two {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(60deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(60deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .three {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(90deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(90deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .four {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(120deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(120deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .five {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(150deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(150deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .six {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(180deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(180deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .seven {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(210deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(210deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .eight {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(240deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(240deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .nine {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(270deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(270deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .ten {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(300deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(300deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .eleven {
   aspect-ratio: 1/1;
-  width: 10px;
+  width: calc(var(--circle-size) * (10 / 110));
   border-radius: 50%;
   position: absolute;
-  background-color: rgb(255, 255, 255);
-  transform: translate(50px, -10px) rotate(330deg);
-  transform-origin: 5px 65px;
+  background-color: white;
+
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  ) rotate(330deg);
+
+  transform-origin:
+    calc(var(--circle-size) * (5 / 110))
+    calc(var(--circle-size) * (65 / 110));
 }
 .u {
-  left: 140px;
+  left: calc(var(--circle-size) * (140 / 110));
 }
 .ur {
-  left: 280px;
+  left: calc(var(--circle-size) * (280 / 110));
 }
 .l {
-  top: 140px;
+  top: calc(var(--circle-size) * (140 / 110));
 }
 .c {
-  left: 140px;
-  top: 140px;
+  left: calc(var(--circle-size) * (140 / 110));
+  top: calc(var(--circle-size) * (140 / 110));
 }
 .r{
-  left: 280px;
-  top: 140px;
+  left: calc(var(--circle-size) * (280 / 110));
+  top: calc(var(--circle-size) * (140 / 110));
 }
 .dl {
-  top: 280px;
+  top: calc(var(--circle-size) * (280 / 110));
 }
 .d {
-  left: 140px;
-  top: 280px;
+  left: calc(var(--circle-size) * (140 / 110));
+  top: calc(var(--circle-size) * (280 / 110));
 }
 .dr {
-  left: 280px;
-  top: 280px;
+  left: calc(var(--circle-size) * (280 / 110));
+  top: calc(var(--circle-size) * (280 / 110));
 }
 #bigText {
   font-size: 25px;

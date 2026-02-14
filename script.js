@@ -97,7 +97,7 @@ function flip() {
 function renderScramble() {
   if(side=="white"){
     for(let i=0; i<9; i++){
-      document.querySelectorAll(".dial")[i].style.transform = "translate(50px, 2px) rotate("+random[i]*30+"deg)";
+      document.querySelectorAll(".dial")[i].style.setProperty("--rot", (random[i] * 30) + "deg");
       document.querySelectorAll(".one")[i].style.backgroundColor = "white";
       document.querySelectorAll(".two")[i].style.backgroundColor = "white";
       document.querySelectorAll(".three")[i].style.backgroundColor = "white";
@@ -116,12 +116,12 @@ function renderScramble() {
   if(side=="black"){
     if(flipType == 'y2'){ // y2 Flip
       for (let i = 0; i < 5; i++) {
-        document.querySelectorAll(".center")[i].style.transform = "translate(50px, 2px) rotate("+(random[13-i])*30 +"deg)";
+        document.querySelectorAll(".center")[i].style.setProperty("--rot",((random[13 - i]) * 30) + "deg");
       }
-      document.querySelector(".dl.dial").style.transform = "translate(50px, 2px) rotate("+(random[8])*-30+"deg)";
-      document.querySelector(".dr.dial").style.transform = "translate(50px, 2px) rotate("+(random[6])*-30+"deg)";
-      document.querySelector(".ul.dial").style.transform = "translate(50px, 2px) rotate("+(random[2])*-30+"deg)";
-      document.querySelector(".ur.dial").style.transform = "translate(50px, 2px) rotate("+(random[0])*-30+"deg)";
+        document.querySelector(".dl.dial").style.setProperty("--rot", (random[8] * -30) + "deg");
+        document.querySelector(".dr.dial").style.setProperty("--rot", (random[6] * -30) + "deg");
+        document.querySelector(".ul.dial").style.setProperty("--rot", (random[2] * -30) + "deg");
+        document.querySelector(".ur.dial").style.setProperty("--rot", (random[0] * -30) + "deg");
       for(let i=0; i<9; i++){
         document.querySelectorAll(".one")[i].style.backgroundColor = "black";
         document.querySelectorAll(".two")[i].style.backgroundColor = "black";
@@ -138,12 +138,12 @@ function renderScramble() {
       }
     } else { // x2 Flip
       for(let i=0; i<5; i++){
-        document.querySelectorAll(".center")[i].style.transform = "translate(50px, 2px) rotate("+(random[i+9]+6)*30+"deg)";
+        document.querySelectorAll(".center")[i].style.setProperty("--rot",((random[i + 9] + 6) * 30) + "deg");
       }
-      document.querySelector(".dl.dial").style.transform = "translate(50px, 2px) rotate("+(random[0]+6)*-30+"deg)";
-      document.querySelector(".dr.dial").style.transform = "translate(50px, 2px) rotate("+(random[2]+6)*-30+"deg)";
-      document.querySelector(".ul.dial").style.transform = "translate(50px, 2px) rotate("+(random[6]+6)*-30+"deg)";
-      document.querySelector(".ur.dial").style.transform = "translate(50px, 2px) rotate("+(random[8]+6)*-30+"deg)";
+        document.querySelector(".dl.dial").style.setProperty("--rot", ((random[0] + 6) * -30) + "deg");
+        document.querySelector(".dr.dial").style.setProperty("--rot", ((random[2] + 6) * -30) + "deg");
+        document.querySelector(".ul.dial").style.setProperty("--rot", ((random[6] + 6) * -30) + "deg");
+        document.querySelector(".ur.dial").style.setProperty("--rot", ((random[8] + 6) * -30) + "deg");
       for(let i=0; i<9; i++){
         document.querySelectorAll(".one")[i].style.backgroundColor = "black";
         document.querySelectorAll(".two")[i].style.backgroundColor = "black";
