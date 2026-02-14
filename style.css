@@ -275,11 +275,16 @@ body {
 }
 #letterButtons {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
   max-width: 400px;
   margin: 10px auto;
   padding: 10px;
+}
+.two-columns {
+  grid-template-columns: repeat(2, 1fr);
+}
+.six-columns {
+  grid-template-columns: repeat(6, 1fr);
 }
 #letterButtons button, #letterButtons #timer {
   font-size: 1.2em;

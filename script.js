@@ -271,6 +271,7 @@ function checkMemo() {
 
   realMemo = convertToBPaulIfNeeded(realMemo);
 
+  document.querySelector("#correctMemo").style.display="block";  
   if(memo==realMemo){
     document.querySelector("#correctMemo").style.color = "green";
     document.querySelector("#memo").style.color = "white";
@@ -536,10 +537,37 @@ document.querySelector("#tommy").addEventListener("click", function() {
 document.querySelector("#executionTrainer").addEventListener("click", function() {
   if (document.querySelector("#executionTrainer").checked) {
     executionMode=true
+    changeTimerLocation();
+    removeInputButtons();
+    createScrambleButton();
+    createCopyMemoButton()
+    document.querySelector("#letterButtons").classList.remove("six-columns");
+    document.querySelector("#letterButtons").classList.add("two-columns");
+    document.querySelector("#letterButtons").style.maxWidth="300px";
+    document.querySelector("#letterButtons").style.gap="50px";
+    document.querySelector("#timerButton").checked = false;
+    restartTimer();
+    document.querySelectorAll(".timerButtonGroup").forEach(el => {
+      el.style.display = "none";
+    });
+    document.querySelector("#correctMemo").innerText="Execution Mode";
+    document.querySelector("#correctMemo").style.color="white";
+    document.querySelector("#memo").style.color="white";
     createMemo(random);
   }
   else{
     executionMode=false
+    removeInputButtons();
+    createInputButtons();
+    document.querySelector("#letterButtons").classList.remove("two-columns");
+    document.querySelector("#letterButtons").classList.add("six-columns");
+    document.querySelector("#letterButtons").style.maxWidth="400px";
+    document.querySelector("#letterButtons").style.gap="10px";
+    document.querySelectorAll(".timerButtonGroup").forEach(el => {
+      el.style.display = "inline";
+    });
+    changeTimerLocation();
+    document.querySelector("#correctMemo").innerText="Enter Memo";
     document.querySelector("#memo").innerText="Memo: ";
   }
 });
@@ -595,6 +623,13 @@ document.querySelector('#flipType').addEventListener('change', function () {
 });
 
 function scramble() {
+  if(executionMode === true) {
+    document.querySelector("#correctMemo").innerText="Execution Mode";
+  } else {
+  document.querySelector("#correctMemo").innerText="Enter Memo";
+  }
+  document.querySelector("#correctMemo").style.color = "white";
+  document.querySelector("#memo").style.color = "white";
   scrambletext = `UR${formatScramble(Math.floor(Math.random() * 12)-5)} DR${formatScramble(Math.floor(Math.random() * 12)-5)} DL${formatScramble(Math.floor(Math.random() * 12)-5)} UL${formatScramble(Math.floor(Math.random() * 12)-5)} U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)} y2 U${formatScramble(Math.floor(Math.random() * 12)-5)} R${formatScramble(Math.floor(Math.random() * 12)-5)} D${formatScramble(Math.floor(Math.random() * 12)-5)} L${formatScramble(Math.floor(Math.random() * 12)-5)} ALL${formatScramble(Math.floor(Math.random() * 12)-5)}`
   random = scrambleconvert(scrambletext);
   document.querySelector("#scramblebox").innerText = scrambletext;
@@ -621,23 +656,73 @@ document.querySelector("#clock").addEventListener("click", function() {
 
 const buttonContainer = document.getElementById('letterButtons');
 
-// Shift left, move first character to last
-const rotatedLabels = [...l.slice(1), l[0]]; 
+function createInputButtons(){
+  // Shift left, move first character to last
+  const rotatedLabels = [...l.slice(1), l[0]]; 
 
-rotatedLabels.forEach(letter => {
-  const btn = document.createElement('button');
-  btn.textContent = letter;
-  btn.addEventListener('click', () => {
-      if(memo.length<20){
-        memo+=letter;
+  rotatedLabels.forEach(letter => {
+    const btn = document.createElement('button');
+    btn.textContent = letter;
+    btn.addEventListener('click', () => {
+        if(memo.length<20){
+          memo+=letter;
+        }
+        if([2,5,8,11,14,17].includes(memo.length)){
+          memo+=" ";
+        }
+        document.querySelector("#memo").innerText="Memo: "+ memo;
+    });
+    buttonContainer.appendChild(btn);
+  });
+
+  // Check memo button
+  const checkBtn = document.createElement('button');
+  checkBtn.textContent = '✓';
+  checkBtn.addEventListener('click', () => {
+    checkMemo();
+  });
+  buttonContainer.appendChild(checkBtn);
+
+  createScrambleButton();
+
+  // Delete single memo button
+  const clearBtn = document.createElement('button');
+  clearBtn.textContent = '⌫';
+  clearBtn.addEventListener('click', () => {
+      if([3,6,9,12,15,18].includes(memo.length)){
+        memo=memo.slice(0,-2);
       }
-      if([2,5,8,11,14,17].includes(memo.length)){
-        memo+=" ";
+      else{
+        memo = memo.slice(0, -1);
       }
       document.querySelector("#memo").innerText="Memo: "+ memo;
   });
-  buttonContainer.appendChild(btn);
-});
+  buttonContainer.appendChild(clearBtn);
+
+  createCopyMemoButton();
+}
+
+createInputButtons();
+
+function createScrambleButton() {
+  // Scramble button
+  const scrambleBtn = document.createElement('button');
+  scrambleBtn.textContent = '🔀';
+  scrambleBtn.addEventListener('click', () => {
+    scramble();
+  });
+  buttonContainer.appendChild(scrambleBtn);
+}
+
+function createCopyMemoButton() {
+  // Copy memo button
+  const copyScrambleBtn = document.createElement('button');
+  copyScrambleBtn.textContent = '📋';
+  copyScrambleBtn.addEventListener('click', () => {
+    copyScramble();
+  });
+  buttonContainer.appendChild(copyScrambleBtn);
+}
 
 // Create/Update memo letter buttons
 function updateLetterButtons(newLabels) {
@@ -669,53 +754,25 @@ function updateLetterButtons(newLabels) {
   });
 }
 
-// Check memo button
-const checkBtn = document.createElement('button');
-checkBtn.textContent = '✓';
-checkBtn.addEventListener('click', () => {
-  checkMemo();
-});
-buttonContainer.appendChild(checkBtn);
-
-// Scramble button
-const scrambleBtn = document.createElement('button');
-scrambleBtn.textContent = '🔀';
-scrambleBtn.addEventListener('click', () => {
-  scramble();
-});
-buttonContainer.appendChild(scrambleBtn);
-
-// Delete single memo button
-const clearBtn = document.createElement('button');
-clearBtn.textContent = '⌫';
-clearBtn.addEventListener('click', () => {
-    if([3,6,9,12,15,18].includes(memo.length)){
-      memo=memo.slice(0,-2);
-    }
-    else{
-      memo = memo.slice(0, -1);
-    }
-    document.querySelector("#memo").innerText="Memo: "+ memo;
-});
-buttonContainer.appendChild(clearBtn);
-
 function copyScramble () {
   navigator.clipboard.writeText(scrambletext);
   alert("Copied scramble to clipboard!");
 }
 
-// Copy memo button
-const copyScrambleBtn = document.createElement('button');
-copyScrambleBtn.textContent = '📋';
-copyScrambleBtn.addEventListener('click', () => {
-  copyScramble();
-});
-buttonContainer.appendChild(copyScrambleBtn);
-
 document.querySelector("#timerButton").addEventListener("click", function() {
   changeTimerLocation();
   restartTimer();
 });
+
+function removeInputButtons() {
+  const container = document.querySelector("#letterButtons");
+  const buttons = container.querySelectorAll("button");
+
+  buttons.forEach(btn => {
+    btn.remove();
+  });
+}
+
 
 function changeTimerLocation() {
   if (document.querySelector("#timerButton").checked) {
@@ -724,20 +781,26 @@ function changeTimerLocation() {
     const timer = document.getElementById("timer");
     const timerHolder = document.getElementById("timerholder");
     if(document.querySelector("#inputButtons").checked) {
-      if (timerHolder && timerHolder.contains(timer)) {
+      if(timerHolder.querySelector("#timer")){
         timerHolder.removeChild(timer);
       }
       buttonContainer.appendChild(timerElement);
+      timerElement.style.display = "block";
     }else {
-      if (buttonContainer.contains(timer)) {
+      if(buttonContainer.querySelector("#timer")){
         buttonContainer.removeChild(timer);
       }
       timerHolder.appendChild(timerElement);
     }
-    document.querySelector("#timer").style.display = "block";
-  }
-  else{
-    document.querySelector("#timer").style.display = "none";
+  } else {
+    const timer = document.querySelector("#timer");
+    const timerHolder = document.getElementById("timerholder");
+    if(buttonContainer.querySelector("#timer")){
+      buttonContainer.removeChild(timer);
+    }
+    if(timerHolder.querySelector("#timer")){
+      timerHolder.removeChild(timer);
+    }
   }
 }
 
@@ -747,7 +810,10 @@ let seconds = 0;
 let startTime;
 let isRunning = false;
 function updateTimer() {
-  document.getElementById('timer').innerText = seconds.toFixed(2);
+  const timer = document.querySelector("#timer");
+  if (timer) {
+    timer.innerText = seconds.toFixed(2);
+  }
 }
 function startTimer() {
   if (!isRunning) {
@@ -800,7 +866,6 @@ function getSimulTypeFromURL() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const typeFromURL = getSimulTypeFromURL();
-  console.log("TYPE: " + typeFromURL);
 
   if(typeFromURL.toLowerCase() === "tommy" || typeFromURL.toLowerCase() === "bpaul")
   {
