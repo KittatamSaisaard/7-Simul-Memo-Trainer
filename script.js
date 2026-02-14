@@ -9,6 +9,7 @@ let l = ["L","A","B","C","D","E","F","G","H","I","J","K"];
 let executionMode = false
 let simultype = 'BPaul';
 let flipType = 'y2';
+let pageJustLoaded = true;
 document.querySelector("#executionTrainer").checked=false
 
 let details = navigator.userAgent;
@@ -213,18 +214,19 @@ function changePinOrder(change) {
       container.appendChild(label);
     }
 
-    switch (simultype) {
-      case 'BPaul':
-        alert("Pin order changed to BPaul!\nFlip type is set to y2");
-        break;
-      case 'Tommy':
-        alert("Pin order changed to Tommy!\nFlip type is set to x2");
-        break;   
-      default:
-        alert("Pin order changed to Custom!\nFlip type is set to x2");
-        break;
-    }
-    
+    if(pageJustLoaded !== true){
+      switch (simultype) {
+        case 'BPaul':
+          alert("Pin order changed to BPaul!\nFlip type is set to y2");
+          break;
+        case 'Tommy':
+          alert("Pin order changed to Tommy!\nFlip type is set to x2");
+          break;   
+        default:
+          alert("Pin order changed to Custom!\nFlip type is set to x2");
+          break;
+      }
+    } 
   }
   else{
     alert("That's not a pin order! Please try again.");
@@ -466,6 +468,19 @@ document.querySelector('#change').addEventListener("click",  function() {
 
 document.querySelector('#simultype').addEventListener('change', function () {
   simultype = this.value;
+
+  if(simultype === "Tommy" || simultype === "BPaul"){
+    const params = new URLSearchParams(window.location.search);
+    params.set("type", simultype.toLowerCase());
+    window.history.replaceState({}, "", "?" + params.toString());
+  } else {
+    window.history.replaceState({}, "", window.location.pathname);
+  }
+
+  changeSimultype(simultype);
+});
+
+function changeSimultype(simultype) {
   const flipSelect = document.getElementById("flipType");
   switch (simultype) {
     case 'BPaul':
@@ -489,7 +504,7 @@ document.querySelector('#simultype').addEventListener('change', function () {
   }
   changePinOrder(false);
   renderScramble();
-});
+}
 
 function toggleVisibility() {
   let div = document.querySelector("#hiddenSettings");
@@ -774,3 +789,26 @@ function restartTimer(){
   resetTimer();
   startTimer();
 }
+
+function getSimulTypeFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const type = (params.get("type") || "bpaul").toLowerCase();
+
+  if (type === "tommy") return "Tommy";
+  return "BPaul";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const typeFromURL = getSimulTypeFromURL();
+  console.log("TYPE: " + typeFromURL);
+
+  if(typeFromURL.toLowerCase() === "tommy" || typeFromURL.toLowerCase() === "bpaul")
+  {
+    simultype = typeFromURL;
+  } else {
+    simultype = "BPaul";
+  }
+  changeSimultype(simultype);
+  pageJustLoaded = false;
+  document.querySelector("#simultype").value = simultype;
+});
