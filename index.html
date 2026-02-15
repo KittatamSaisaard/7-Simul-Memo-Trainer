@@ -48,27 +48,62 @@
       <label for="inputButtons">Enable/disable input buttons:</label>
       <input type="checkbox" value="inputButtons" id="inputButtons" checked>
     </div>
+    <br><br>
+    <div id="statsContainer">
+      <div id="normalStats">
+        <div class="statCard">
+          <div class="statLabel">Total Solves</div>
+          <div id="totalSolves" class="statValue">0</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">Success Rate</div>
+          <div id="successRate" class="statValue">0%</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">Current Streak</div>
+          <div id="currentStreak" class="statValue">0</div>
+        </div>
+      </div>
+      <div id="practiceStats" class="statCard" style="display: none;">
+        <div class="statLabel">Practice Mode</div>
+        <div class="statValue">Enabled</div>
+      </div>
+    </div>
+    <br>
     <p id="info"><b>Info:</b><br><span id="bigText">To use, enter your memo as if you were to start execution with the white dials facing you. This means that if you are using the order shown in Tommy and Caleb's videos, you must do an x2 and start memo on the black dials. You can enter your own scramble by pressing the button. Memo is default to 1-12 as A-L.</span><br><b>Controls:</b><br><b>Space</b> or click on clock: flip clock<br><b>Enter</b> or click ✓: check memo<br><b>S</b> or click 🔀: scramble<br><b>Backspace</b> or click ⌫: delete memo<br><b>Click on scramble</b> or click 📋: copy scramble to clipboard</p>
-    <button onclick="toggleVisibility()">More Settings</button>
-    <div id="hiddenSettings">
-      <b>Memo Input Type:</b>
-      <input type="radio" value="letters" id="letters" name="memoType" checked="checked">
-      <label for="letters">Letters (A-L for 1-12)</label>
-      <input type="radio" value="ryan" id="ryan" name="memoType">
-      <label for="ryan">Ryan's method (0-6 and A-E for 12-7 (A is -1))</label>
-      <input type="radio" value="tommy" id="tommy" name="memoType">
-      <label for="tommy">Tommy (1-6 is A-F and -5 to -1 is G-K, 0 is O)</label><br>
-      <input type="checkbox" value="executionTrainer" id="executionTrainer">
-      <label for="executionTrainer"><b>Execution trainer mode:</b> when checked, the memo will be automatically given so you can practice execution.</label><br>
-      <input type="checkbox" value="timerButton" id="timerButton" class="timerButtonGroup">
-      <label for="timerButton" class="timerButtonGroup"><b>Timer:</b> when checked, your memo will be timed.</label><br class="timerButtonGroup">
-      <input type="checkbox" value="hourIndicators" id="hourIndicators">
-      <label for="hourIndicators"><b>Hide Hour Indicators:</b> when checked, the hour indicators will be hidden.</label><br>
-      <label for="flipType"><b>Flip Type:</b></label>
-      <select name="flipType" id="flipType">
-        <option value="x2">x2</option>
-        <option value="y2" selected>y2</option>
-      </select>
+    <div class="settingsButtonContainer">
+      <button onclick="toggleVisibility('hiddenSettings')" >More Settings</button>
+      <div id="hiddenSettings">
+        <b>Memo Input Type:</b>
+        <input type="radio" value="letters" id="letters" name="memoType" checked="checked">
+        <label for="letters">Letters (A-L for 1-12)</label>
+        <input type="radio" value="ryan" id="ryan" name="memoType">
+        <label for="ryan">Ryan's method (0-6 and A-E for 12-7 (A is -1))</label>
+        <input type="radio" value="tommy" id="tommy" name="memoType">
+        <label for="tommy">Tommy (1-6 is A-F and -5 to -1 is G-K, 0 is O)</label><br>
+        <input type="checkbox" value="executionTrainer" id="executionTrainer">
+        <label for="executionTrainer"><b>Execution trainer mode:</b> when checked, the memo will be automatically given so you can practice execution.</label><br>
+        <input type="checkbox" value="timerButton" id="timerButton" class="timerButtonGroup">
+        <label for="timerButton" class="timerButtonGroup"><b>Timer:</b> when checked, your memo will be timed.</label><br class="timerButtonGroup">
+        <input type="checkbox" value="hourIndicators" id="hourIndicators">
+        <label for="hourIndicators"><b>Hide Hour Indicators:</b> when checked, the hour indicators will be hidden.</label><br>
+        <label for="flipType"><b>Flip Type:</b></label>
+        <select name="flipType" id="flipType">
+          <option value="x2">x2</option>
+          <option value="y2" selected>y2</option>
+        </select>
+      </div>
+      <br><br>
+      <button onclick="toggleVisibility('statHiddenSettings')">Stats Settings</button>
+      <div id="statHiddenSettings">
+        <input type="checkbox" value="practiceMode" id="practiceMode">
+        <label for="practiceMode"><b>Practice Mode:</b> when checked, memo entered will not count towards stats.</label><br>
+        <button id="exportStats">Export stats (CSV)</button>
+        <button id="deleteLastStat">Delete last entry</button>
+        <button id="clearStats">Clear stats</button>
+      </div>
     </div>
     <br><br>
   </div>

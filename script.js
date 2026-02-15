@@ -2,14 +2,17 @@ let side = "white";
 let dial = "black";
 let random = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 let scrambletext = "";
+let previousscrambletext = scrambletext;
 let memo = "";
 let realMemo = "";
 let enteredscramble = "";
 let l = ["L","A","B","C","D","E","F","G","H","I","J","K"];
 let executionMode = false
 let simultype = 'BPaul';
+let simultypeInput = "";
 let flipType = 'y2';
 let pageJustLoaded = true;
+const PRACTICE_KEY = "practice_mode";
 document.querySelector("#executionTrainer").checked=false
 
 let details = navigator.userAgent;
@@ -33,7 +36,7 @@ document.addEventListener("keydown", function onEvent(event) {
     event.preventDefault();
     flip();
   }
-  else if (event.key === "s") {
+  else if (event.key === "s" || event.key === "S") {
     scramble();
   }
   else if(event.key === "Backspace" && realMemo == false){
@@ -175,6 +178,8 @@ function changePinOrder(change) {
     input = "dl R DR ur L UL \\";
   }
 
+  simultypeInput = input;
+
   output = checkPinOrder(input)
   if(output != false){
     order = [output[0].split(" "),output[1].split(" "),output[2]];
@@ -252,6 +257,10 @@ function checkPinOrder(input) {
 }
 
 function checkMemo() {
+  if(memo === ""){
+    return;
+  }
+
   let realMemo = "";
   for(let i of order[0]){
     if(document.getElementById(i).checked){
@@ -282,6 +291,21 @@ function checkMemo() {
     document.querySelector("#correctMemo").style.color = "white";
     document.querySelector("#memo").style.color = "red";
     document.querySelector("#correctMemo").innerText=`Correct memo: ${realMemo}`;  
+  }
+
+  const isCorrect = (memo === realMemo);
+  if(previousscrambletext !== scrambletext && !isPracticeMode()){
+    addStatRow({
+      timestamp: new Date().toLocaleString(),
+      pinorder: simultype === "Custom" ? simultypeInput : simultype,
+      time_seconds: document.querySelector("#timerButton").checked ? Number(seconds.toFixed(2)) : "",
+      correct_memo: realMemo.trim(),
+      input_memo: (memo || "").trim(),
+      is_correct: isCorrect,
+      scramble: scrambletext
+    });
+    renderInstantStats();
+    previousscrambletext = scrambletext;
   }
   stopTimer();
 }
@@ -526,14 +550,17 @@ function changeSimultype(simultype) {
   renderScramble();
 }
 
-function toggleVisibility() {
-  let div = document.querySelector("#hiddenSettings");
-  if (div.style.display === "block") {
-    div.style.display = "none";
+function toggleVisibility(id) {
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  if (element.style.display === "block") {
+    element.style.display = "none";
   } else {
-    div.style.display = "block";
+    element.style.display = "block";
   }
 }
+
 
 document.querySelector("#letters").addEventListener("click", function() {
   if (true) {
@@ -797,6 +824,7 @@ function changeTimerLocation() {
   if (document.querySelector("#timerButton").checked) {
     const timerElement = document.createElement('h2');
     timerElement.id = "timer";
+    timerElement.innerText = seconds.toFixed(2);
     const timer = document.getElementById("timer");
     const timerHolder = document.getElementById("timerholder");
     if(document.querySelector("#inputButtons").checked) {
@@ -884,6 +912,12 @@ function getSimulTypeFromURL() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  
+  const box = document.querySelector("#practiceMode");
+  box.checked = isPracticeMode();
+  updateStatsDisplay();
+
+  renderInstantStats();
   const typeFromURL = getSimulTypeFromURL();
 
   if(typeFromURL.toLowerCase() === "tommy" || typeFromURL.toLowerCase() === "bpaul")
@@ -895,4 +929,174 @@ document.addEventListener("DOMContentLoaded", () => {
   changeSimultype(simultype);
   pageJustLoaded = false;
   document.querySelector("#simultype").value = simultype;
+});
+
+// ===== Stats storage =====
+const STATS_KEY = "simul_stats_v1";
+
+function loadStats() {
+  try {
+    return JSON.parse(localStorage.getItem(STATS_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveStats(stats) {
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+}
+
+function addStatRow(row) {
+  const stats = loadStats();
+  stats.push(row);
+
+  const MAX_ROWS = 10000; // cap
+  if (stats.length > MAX_ROWS) {
+    stats.splice(0, stats.length - MAX_ROWS);
+  }
+
+  saveStats(stats);
+}
+
+
+// Basic CSV escaping (handles commas, quotes, new lines)
+function csvCell(value) {
+  const s = String(value ?? "");
+  if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+function exportStatsCsv(filename = "7-simul-stats.csv") {
+  const stats = loadStats();
+
+  const headers = [
+    "timestamp",
+    "pinorder",
+    "time_seconds",
+    "correct_memo",
+    "input_memo",
+    "is_correct",
+    "scramble"
+  ];
+
+  const lines = [
+    headers.join(","),
+    ...stats.map(r => headers.map(h => csvCell(r[h])).join(","))
+  ];
+
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+document.querySelector("#exportStats").addEventListener("click", () => exportStatsCsv());
+
+document.querySelector("#clearStats").addEventListener("click", () => {
+   const stats = loadStats();
+
+  if (!stats || stats.length === 0) {
+    alert("No stats to clear.");
+    return;
+  }
+
+  const ok = prompt('Type "DELETE" to clear all stats.') === "DELETE";
+  if (!ok) {
+    alert("Clearing stats aborted.");
+    return;
+  }
+
+  localStorage?.removeItem(STATS_KEY);
+  renderInstantStats();
+  alert("Stats cleared.");
+});
+
+function deleteLastStat() {
+  const stats = loadStats();
+  if (stats.length === 0) return false;
+
+  stats.pop();
+  saveStats(stats);
+  return true;
+}
+
+document.querySelector("#deleteLastStat").addEventListener("click", () => {
+  const deleted = deleteLastStat();
+  if (!deleted) {
+    alert("No stat to delete.");
+    return;
+  }
+  
+  const ok = confirm("Delete your most recent stat?");
+  if (!ok) {
+    alert("Deleting last stat aborted.");
+    return;
+  }
+  
+  alert("Last stat deleted successfully.");
+  renderInstantStats();
+});
+
+
+// Returns the current streak of consecutive correct solves (from most recent backwards)
+function getCurrentStreak(stats) {
+  let streak = 0;
+
+  // Walk backwards from the most recent attempt
+  for (let i = stats.length - 1; i >= 0; i--) {
+    if (stats[i]?.is_correct === true) {
+      streak++;
+    } else {
+      break; // stop at first failure (or missing data)
+    }
+  }
+
+  return streak;
+}
+
+function renderInstantStats() {
+  const stats = loadStats();
+
+  const totalSolves = stats.length;
+  const totalSuccess = stats.filter(s => s.is_correct === true).length;
+  const successRate = totalSolves ? ((totalSuccess / totalSolves) * 100).toFixed(1) : "0.0";
+
+  const currentStreak = getCurrentStreak(stats);
+
+  document.getElementById("totalSolves").textContent = totalSolves;
+  document.getElementById("successRate").textContent = successRate + "%";
+  document.getElementById("currentStreak").textContent = currentStreak;
+}
+
+function isPracticeMode() {
+  return localStorage.getItem(PRACTICE_KEY) === "1";
+}
+
+function setPracticeMode(on) {
+  localStorage.setItem(PRACTICE_KEY, on ? "1" : "0");
+}
+
+function updateStatsDisplay() {
+  const normalStats = document.getElementById("normalStats");
+  const practiceStats = document.getElementById("practiceStats");
+
+  if (isPracticeMode()) {
+    normalStats.style.display = "none";
+    practiceStats.style.display = "block";
+  } else {
+    normalStats.style.display = "flex";
+    practiceStats.style.display = "none";
+  }
+}
+
+document.querySelector("#practiceMode").addEventListener("change", function () {
+  setPracticeMode(this.checked);
+  updateStatsDisplay();
 });
