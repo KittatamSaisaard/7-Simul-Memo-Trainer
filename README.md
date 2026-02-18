@@ -2,6 +2,8 @@
 
 A browser-based trainer for memorising Rubik’s Clock 7 simul memo.
 
+You can use the trainer at https://kittatamsaisaard.github.io/7-Simul-Memo-Trainer/
+
 This repository is a fork of the original project by JoshM2.
 
 Original repository:
