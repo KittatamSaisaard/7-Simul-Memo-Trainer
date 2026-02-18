@@ -657,7 +657,7 @@ function renderHourElements(){
     ".one, .two, .three, .four, .five, .six, .seven, .eight, .nine, .ten, .eleven"
   );
 
-  if(simultype != 'BPaul' && side == 'black') {
+  if(flipType === "x2" && side == "black") {
     hourElementsTwelve = document.querySelectorAll(".six");
     hourElements = document.querySelectorAll(
     ".one, .two, .three, .four, .five, .seven, .eight, .nine, .ten, .eleven, .twelve"
