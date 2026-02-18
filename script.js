@@ -13,6 +13,7 @@ let simultypeInput = "";
 let flipType = 'y2';
 let pageJustLoaded = true;
 const PRACTICE_KEY = "practice_mode";
+const TRAINER_KEY = "trainer_mode";
 document.querySelector("#executionTrainer").checked=false
 
 let details = navigator.userAgent;
@@ -581,8 +582,14 @@ document.querySelector("#tommy").addEventListener("click", function() {
   }
 });
 document.querySelector("#executionTrainer").addEventListener("click", function() {
+  setTrainerMode(this.checked);
+  updateExecutionTrainerMode();
+});
+
+function updateExecutionTrainerMode(){
   if (document.querySelector("#executionTrainer").checked) {
-    executionMode=true
+    executionMode=true;
+    document.querySelector("#statsContainer").style.display = "none";
     changeTimerLocation();
     removeInputButtons();
     createScrambleButton();
@@ -596,13 +603,14 @@ document.querySelector("#executionTrainer").addEventListener("click", function()
     document.querySelectorAll(".timerButtonGroup").forEach(el => {
       el.style.display = "none";
     });
-    document.querySelector("#correctMemo").innerText="Execution Mode";
+    document.querySelector("#correctMemo").innerText="Execution Trainer Mode";
     document.querySelector("#correctMemo").style.color="white";
     document.querySelector("#memo").style.color="white";
     createMemo(random);
   }
   else{
-    executionMode=false
+    executionMode=false;
+    document.querySelector("#statsContainer").style.display = "flex";
     removeInputButtons();
     createInputButtons();
     document.querySelector("#letterButtons").classList.remove("two-columns");
@@ -616,7 +624,7 @@ document.querySelector("#executionTrainer").addEventListener("click", function()
     document.querySelector("#correctMemo").innerText="Enter Memo";
     document.querySelector("#memo").innerText="Memo: ";
   }
-});
+}
 document.querySelector("#inputButtons").addEventListener("click", function() {
   if (document.querySelector("#inputButtons").checked) {
     document.querySelector("#letterButtons").style.display = "grid";
@@ -670,7 +678,7 @@ document.querySelector('#flipType').addEventListener('change', function () {
 
 function scramble() {
   if(executionMode === true) {
-    document.querySelector("#correctMemo").innerText="Execution Mode";
+    document.querySelector("#correctMemo").innerText="Execution Trainer Mode";
   } else {
   document.querySelector("#correctMemo").innerText="Enter Memo";
   }
@@ -912,9 +920,13 @@ function getSimulTypeFromURL() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  const trainerModeBox = document.querySelector("#executionTrainer");
+  trainerModeBox.checked = isTrainerMode();
+  updateExecutionTrainerMode();
   
-  const box = document.querySelector("#practiceMode");
-  box.checked = isPracticeMode();
+  const practiceModeBox = document.querySelector("#practiceMode");
+  practiceModeBox.checked = isPracticeMode();
   updateStatsDisplay();
 
   renderInstantStats();
@@ -1100,3 +1112,11 @@ document.querySelector("#practiceMode").addEventListener("change", function () {
   setPracticeMode(this.checked);
   updateStatsDisplay();
 });
+
+function isTrainerMode() {
+  return localStorage.getItem(TRAINER_KEY) === "1";
+}
+
+function setTrainerMode(on) {
+  localStorage.setItem(TRAINER_KEY, on ? "1" : "0");
+}
