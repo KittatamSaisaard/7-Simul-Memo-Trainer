@@ -612,8 +612,8 @@ function updateExecutionTrainerMode(){
     document.querySelector("#letterButtons").classList.add("two-columns");
     document.querySelector("#letterButtons").style.maxWidth="300px";
     document.querySelector("#letterButtons").style.gap="50px";
-    document.querySelector("#timerButton").checked = false;
-    restartTimer();
+    changeTimerLocation();
+    resetTimer();
     document.querySelectorAll(".timerButtonGroup").forEach(el => {
       el.style.display = "none";
     });
@@ -635,6 +635,7 @@ function updateExecutionTrainerMode(){
       el.style.display = "inline";
     });
     changeTimerLocation();
+    restartTimer();
     document.querySelector("#correctMemo").innerText="Enter Memo";
     document.querySelector("#memo").innerText="Memo: ";
   }
@@ -845,7 +846,7 @@ function removeInputButtons() {
 
 
 function changeTimerLocation() {
-  if (document.querySelector("#timerButton").checked) {
+  if (document.querySelector("#timerButton").checked && !document.querySelector("#executionTrainer").checked) {
     const timerElement = document.createElement('h2');
     timerElement.id = "timer";
     timerElement.innerText = seconds.toFixed(2);
