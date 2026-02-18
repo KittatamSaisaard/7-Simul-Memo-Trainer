@@ -15,6 +15,7 @@ let pageJustLoaded = true;
 const PRACTICE_KEY = "practice_mode";
 const TRAINER_KEY = "trainer_mode";
 const INPUTTYPE_KEY = "input_type";
+const TIMER_KEY = "timer";
 const HOURINDICATORS_KEY = "hour_indicators";
 document.querySelector("#executionTrainer").checked=false
 
@@ -828,6 +829,7 @@ function copyScramble () {
 }
 
 document.querySelector("#timerButton").addEventListener("click", function() {
+  setTimer(this.checked);
   changeTimerLocation();
   restartTimer();
 });
@@ -943,6 +945,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const trainerModeBox = document.querySelector("#executionTrainer");
   trainerModeBox.checked = isTrainerMode();
   updateExecutionTrainerMode();
+
+  const timerBox = document.querySelector("#timerButton");
+  timerBox.checked = isTimer();
+  changeTimerLocation();
+  restartTimer();
 
   const hourIndicatorsBox = document.querySelector("#hourIndicators");
   hourIndicatorsBox.checked = isHideHourIndicators();
@@ -1166,6 +1173,14 @@ function setInputLetterType(type) {
       break;
   }
   localStorage.setItem(INPUTTYPE_KEY, letterType);
+}
+
+function isTimer() {
+  return localStorage.getItem(TIMER_KEY) === "1";
+}
+
+function setTimer(on) {
+  localStorage.setItem(TIMER_KEY, on ? "1" : "0");
 }
 
 function isHideHourIndicators() {
