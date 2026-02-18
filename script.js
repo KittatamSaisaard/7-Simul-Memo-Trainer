@@ -948,12 +948,12 @@ document.addEventListener("DOMContentLoaded", () => {
   updateExecutionTrainerMode();
 
   const timerBox = document.querySelector("#timerButton");
-  timerBox.checked = isTimer();
+  timerBox.checked = getTimer();
   changeTimerLocation();
   restartTimer();
 
   const hourIndicatorsBox = document.querySelector("#hourIndicators");
-  hourIndicatorsBox.checked = isHideHourIndicators();
+  hourIndicatorsBox.checked = getHideHourIndicators();
   renderHourElements();
   
   const practiceModeBox = document.querySelector("#practiceMode");
@@ -1176,7 +1176,7 @@ function setInputLetterType(type) {
   localStorage.setItem(INPUTTYPE_KEY, letterType);
 }
 
-function isTimer() {
+function getTimer() {
   return localStorage.getItem(TIMER_KEY) === "1";
 }
 
@@ -1184,7 +1184,7 @@ function setTimer(on) {
   localStorage.setItem(TIMER_KEY, on ? "1" : "0");
 }
 
-function isHideHourIndicators() {
+function getHideHourIndicators() {
   return localStorage.getItem(HOURINDICATORS_KEY) === "1";
 }
 
