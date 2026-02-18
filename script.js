@@ -14,6 +14,7 @@ let flipType = 'y2';
 let pageJustLoaded = true;
 const PRACTICE_KEY = "practice_mode";
 const TRAINER_KEY = "trainer_mode";
+const INPUTTYPE_KEY = "input_type";
 document.querySelector("#executionTrainer").checked=false
 
 let details = navigator.userAgent;
@@ -562,25 +563,36 @@ function toggleVisibility(id) {
   }
 }
 
+function updateInputType(type){
+  switch (type) {
+    case "letters":
+      l = ["L","A","B","C","D","E","F","G","H","I","J","K"];
+      break;
+    case "ryan":
+      l = ["0","1","2","3","4","5","6","E","D","C","B","A"];
+      break;
+    case "tommy":
+      l = ["O","A","B","C","D","E","F","G","H","I","J","K"];
+      break;
+    default:
+      l = ["L","A","B","C","D","E","F","G","H","I","J","K"]; // Default to "letters"
+      break;
+  }
+  setInputLetterType(type);
+  updateLetterButtons(l);
+  createMemo(random);
+}
 
 document.querySelector("#letters").addEventListener("click", function() {
-  if (true) {
-    l = ["L","A","B","C","D","E","F","G","H","I","J","K"];
-    updateLetterButtons(l);
-  }
+  updateInputType("letters");
 });
 document.querySelector("#ryan").addEventListener("click", function() {
-  if (true) {
-    l = ["0","1","2","3","4","5","6","E","D","C","B","A"];
-    updateLetterButtons(l);
-  }
+  updateInputType("ryan");
 });
 document.querySelector("#tommy").addEventListener("click", function() {
-  if (true) {
-    l = ["O","A","B","C","D","E","F","G","H","I","J","K"];
-    updateLetterButtons(l);
-  }
+  updateInputType("tommy");
 });
+
 document.querySelector("#executionTrainer").addEventListener("click", function() {
   setTrainerMode(this.checked);
   updateExecutionTrainerMode();
@@ -921,6 +933,11 @@ function getSimulTypeFromURL() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  const inputLetterType = getInputLetterType();
+  const inputLetterTypeBox = document.querySelector("#"+inputLetterType);
+  inputLetterTypeBox.checked = true;
+  updateInputType(inputLetterType);
+
   const trainerModeBox = document.querySelector("#executionTrainer");
   trainerModeBox.checked = isTrainerMode();
   updateExecutionTrainerMode();
@@ -1119,4 +1136,28 @@ function isTrainerMode() {
 
 function setTrainerMode(on) {
   localStorage.setItem(TRAINER_KEY, on ? "1" : "0");
+}
+
+function getInputLetterType() {
+  return localStorage.getItem(INPUTTYPE_KEY) ?? "letters";
+}
+
+function setInputLetterType(type) {
+  let letterType = "letters";
+
+  switch (type) {
+    case "letters":
+      letterType = "letters";
+      break;
+    case "ryan":
+      letterType = "ryan";
+      break;
+    case "tommy":
+      letterType = "tommy";
+      break;
+    default:
+      letterType = "letters";
+      break;
+  }
+  localStorage.setItem(INPUTTYPE_KEY, letterType);
 }
