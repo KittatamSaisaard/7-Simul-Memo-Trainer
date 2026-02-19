@@ -17,7 +17,7 @@ const TRAINER_KEY = "trainer_mode";
 const INPUTTYPE_KEY = "input_type";
 const TIMER_KEY = "timer";
 const HOURINDICATORS_KEY = "hour_indicators";
-document.querySelector("#executionTrainer").checked=false
+document.querySelector("#executionTrainer").checked=false;
 
 let details = navigator.userAgent;
 let regexp = /android|iphone|kindle|ipad/i;
@@ -597,6 +597,9 @@ document.querySelector("#tommy").addEventListener("click", function() {
 
 document.querySelector("#executionTrainer").addEventListener("click", function() {
   setTrainerMode(this.checked);
+  if(!document.querySelector("#executionTrainer").checked){
+    scramble();
+  }
   updateExecutionTrainerMode();
 });
 
@@ -832,6 +835,9 @@ function copyScramble () {
 document.querySelector("#timerButton").addEventListener("click", function() {
   setTimer(this.checked);
   changeTimerLocation();
+  if(document.querySelector("#timerButton").checked){
+    scramble();
+  }
   restartTimer();
 });
 
