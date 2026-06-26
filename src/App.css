@@ -1,0 +1,196 @@
+:root {
+  --circle-size: min(20vw, 110px);
+}
+
+body {
+  background-color: rgb(70, 70, 70);
+  font-family: Arial;
+  color: white;
+  margin: 0;
+}
+
+#title {
+  text-align: center;
+  margin: 0;
+  font-size: calc(var(--circle-size) * (25 / 110));
+}
+
+#correctMemo {
+  margin-bottom: 0;
+}
+
+#memo {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#underClock {
+  position: absolute;
+  top: calc(var(--circle-size) * (475 / 110));
+}
+
+#hiddenSettings {
+  /* visible when shown */
+}
+
+#statHiddenSettings button {
+  display: block;
+  font-size: 14px;
+  width: auto;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  margin-left: 4px;
+}
+
+.settingsButtonContainer {
+  display: block;
+}
+
+#clock {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  margin-left: calc(var(--circle-size) * (-195 / 110));
+}
+
+.circle {
+  aspect-ratio: 1/1;
+  width: var(--circle-size);
+  border-radius: 50%;
+  position: absolute;
+  background-color: white;
+}
+
+.dial {
+  background-color: black;
+  width: calc(var(--circle-size) * (10 / 110));
+  height: calc(var(--circle-size) * (53 / 110));
+  position: absolute;
+  transform-origin: center bottom;
+
+  --tx: calc(var(--circle-size) * (50 / 110));
+  --ty: calc(var(--circle-size) * (2 / 110));
+  --rot: 0deg;
+
+  transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
+}
+
+.twelve {
+  aspect-ratio: 1/1;
+  width: calc(var(--circle-size) * (10 / 110));
+  border-radius: 50%;
+  position: absolute;
+  background-color: red;
+  transform: translate(
+    calc(var(--circle-size) * (50 / 110)),
+    calc(var(--circle-size) * (-10 / 110))
+  );
+}
+
+.one   { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(30deg);  transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.two   { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(60deg);  transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.three { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(90deg);  transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.four  { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(120deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.five  { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(150deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.six   { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(180deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.seven { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(210deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.eight { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(240deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.nine  { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(270deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.ten   { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(300deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+.eleven{ aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(330deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
+
+/* Clock face positions */
+.ul { /* default: 0,0 */ }
+.u  { left: calc(var(--circle-size) * (140 / 110)); }
+.ur { left: calc(var(--circle-size) * (280 / 110)); }
+.l  { top:  calc(var(--circle-size) * (140 / 110)); }
+.c  { left: calc(var(--circle-size) * (140 / 110)); top: calc(var(--circle-size) * (140 / 110)); }
+.r  { left: calc(var(--circle-size) * (280 / 110)); top: calc(var(--circle-size) * (140 / 110)); }
+.dl { top:  calc(var(--circle-size) * (280 / 110)); }
+.d  { left: calc(var(--circle-size) * (140 / 110)); top: calc(var(--circle-size) * (280 / 110)); }
+.dr { left: calc(var(--circle-size) * (280 / 110)); top: calc(var(--circle-size) * (280 / 110)); }
+
+#bigText {
+  font-size: 25px;
+  font-weight: bold;
+  color: red;
+}
+
+#letterButtons {
+  display: grid;
+  gap: 10px;
+  max-width: 400px;
+  margin: 10px auto;
+  padding: 10px;
+}
+
+.two-columns {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.six-columns {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+#letterButtons button,
+#letterButtons #timer {
+  font-size: 1.2em;
+  padding: 15px 0;
+  border: none;
+  border-radius: 10px;
+  background-color: #444;
+  color: white;
+  text-align: center;
+}
+
+#letterButtons #timer {
+  grid-column: 5 / span 2;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+button {
+  font-size: 16px;
+  touch-action: manipulation;
+}
+
+#scramble:hover,
+#clock:hover,
+button:hover,
+select:hover,
+input:hover {
+  cursor: pointer;
+}
+
+#statsContainer {
+  display: flex;
+  margin: 20px 0;
+  justify-content: center;
+}
+
+.statCard {
+  background-color: #292929;
+  border: 1px solid #ffffff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #fafafa;
+  margin-bottom: 4px;
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#normalStats {
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  display: flex;
+}
