@@ -130,6 +130,28 @@ export function convertToBPaulIfNeeded(realMemo, simultype) {
   return realMemo;
 }
 
+export function swapSides(state, flipType = 'x2') {
+  const s = [...state];
+  const r = [...state];
+  const inv = v => (12 - v) % 12;
+  if (flipType === 'y2') {
+    // Y2: left-right corner swap with inversion
+    r[0] = inv(s[2]); r[2] = inv(s[0]);
+    r[6] = inv(s[8]); r[8] = inv(s[6]);
+    // Centers: [1,3,4,5,7] ↔ pins [13,12,11,10,9]
+    r[1] = s[13]; r[3] = s[12]; r[4] = s[11]; r[5] = s[10]; r[7] = s[9];
+    r[9] = s[7];  r[10] = s[5]; r[11] = s[4]; r[12] = s[3]; r[13] = s[1];
+  } else {
+    // X2: top-bottom corner swap with inversion
+    r[0] = inv(s[6]); r[2] = inv(s[8]);
+    r[6] = inv(s[0]); r[8] = inv(s[2]);
+    // Centers: [1,3,4,5,7] ↔ pins [9,10,11,12,13]
+    r[1] = s[9];  r[3] = s[10]; r[4] = s[11]; r[5] = s[12]; r[7] = s[13];
+    r[9] = s[1];  r[10] = s[3]; r[11] = s[4]; r[12] = s[5]; r[13] = s[7];
+  }
+  return r;
+}
+
 export function computeMemoForPairs(random, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft) {
   let realMemo = '';
   for (const i of order[0]) {

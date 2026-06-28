@@ -20,8 +20,8 @@ export default function MemoInput({
   const maxWidth = executionMode ? '300px' : '400px';
   const gap = executionMode ? '50px' : '10px';
 
-  const letterButtons = rotatedLabels.map((letter) => (
-    <button key={letter} onClick={() => onLetter(letter)}>
+  const letterButtons = rotatedLabels.map((letter, i) => (
+    <button key={i} onClick={() => onLetter(letter)}>
       {letter}
     </button>
   ));
@@ -31,15 +31,15 @@ export default function MemoInput({
       <div
         id="letterButtons"
         className={columns}
-        style={{ display: 'grid', maxWidth, gap }}
+        style={{ display: showButtons ? 'grid' : 'none', maxWidth, gap }}
       >
         <button onClick={onScramble}>🔀</button>
-        {timerEnabled && (
+        {!showButtons && timerEnabled && (
           <p id="timer" style={{ display: 'block', gridColumn: '2' }}>
             {timer}
           </p>
         )}
-        <button onClick={onCopyScramble}>📋</button>
+        {!showButtons && <button onClick={onCopyScramble}>📋</button>}
       </div>
     );
   }

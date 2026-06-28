@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Stats({ stats, practiceMode, onExport, onDeleteLast, onClear }) {
+export default function Stats({ stats, practiceMode, activeSession }) {
   if (practiceMode) {
     return (
       <div id="statsContainer">
@@ -16,8 +16,8 @@ export default function Stats({ stats, practiceMode, onExport, onDeleteLast, onC
     <div id="statsContainer">
       <div id="normalStats">
         <div className="statCard">
-          <div className="statLabel">Total Solves</div>
-          <div className="statValue">{stats.totalSolves}</div>
+          <div className="statLabel">Session {activeSession}</div>
+          <div className="statValue" style={{ fontSize: '0.9rem', paddingTop: '0.2rem' }}>Total Solves: {stats.totalSolves}</div>
         </div>
         <div className="statCard">
           <div className="statLabel">Success Rate</div>

@@ -1,196 +1,645 @@
+/* ── CSS custom properties ───────────────────────────────────── */
 :root {
-  --circle-size: min(20vw, 110px);
+  --cell-size: min(12vw, 80px);   /* controls grid spacing & outer circle */
+  --circle-size: min(14vw, 97px); /* controls individual clock face size */
+  --bg: #464646;
+  --surface: #333;
+  --surface2: #292929;
+  --border: #555;
+  --accent: #6a8fff;
+  --radius: 10px;
 }
 
+/* ── Base ─────────────────────────────────────────────────────── */
 body {
-  background-color: rgb(70, 70, 70);
-  font-family: Arial;
+  background-color: var(--bg);
+  font-family: Arial, sans-serif;
   color: white;
   margin: 0;
 }
 
-#title {
-  text-align: center;
+/* ── App wrapper ─────────────────────────────────────────────── */
+.app-container {
+  min-height: 100vh;
+  padding: 0.75rem 1rem 2rem;
+  box-sizing: border-box;
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.25rem 0 0.75rem;
+}
+
+.app-header h1 {
   margin: 0;
-  font-size: calc(var(--circle-size) * (25 / 110));
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  text-decoration: underline;
 }
 
-#correctMemo {
-  margin-bottom: 0;
-}
-
-#memo {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-#underClock {
-  position: absolute;
-  top: calc(var(--circle-size) * (475 / 110));
-}
-
-#hiddenSettings {
-  /* visible when shown */
-}
-
-#statHiddenSettings button {
-  display: block;
-  font-size: 14px;
-  width: auto;
-  margin-top: 2px;
-  margin-bottom: 4px;
-  margin-left: 4px;
-}
-
-.settingsButtonContainer {
-  display: block;
-}
-
-#clock {
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  margin-left: calc(var(--circle-size) * (-195 / 110));
-}
-
-.circle {
-  aspect-ratio: 1/1;
-  width: var(--circle-size);
+/* ── Help icon + tooltip ─────────────────────────────────────── */
+.help-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
-  position: absolute;
-  background-color: white;
-}
-
-.dial {
-  background-color: black;
-  width: calc(var(--circle-size) * (10 / 110));
-  height: calc(var(--circle-size) * (53 / 110));
-  position: absolute;
-  transform-origin: center bottom;
-
-  --tx: calc(var(--circle-size) * (50 / 110));
-  --ty: calc(var(--circle-size) * (2 / 110));
-  --rot: 0deg;
-
-  transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
-}
-
-.twelve {
-  aspect-ratio: 1/1;
-  width: calc(var(--circle-size) * (10 / 110));
-  border-radius: 50%;
-  position: absolute;
-  background-color: red;
-  transform: translate(
-    calc(var(--circle-size) * (50 / 110)),
-    calc(var(--circle-size) * (-10 / 110))
-  );
-}
-
-.one   { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(30deg);  transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.two   { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(60deg);  transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.three { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(90deg);  transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.four  { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(120deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.five  { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(150deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.six   { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(180deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.seven { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(210deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.eight { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(240deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.nine  { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(270deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.ten   { aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(300deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-.eleven{ aspect-ratio:1/1; width:calc(var(--circle-size)*(10/110)); border-radius:50%; position:absolute; background-color:white; transform:translate(calc(var(--circle-size)*(50/110)),calc(var(--circle-size)*(-10/110))) rotate(330deg); transform-origin:calc(var(--circle-size)*(5/110)) calc(var(--circle-size)*(65/110)); }
-
-/* Clock face positions */
-.ul { /* default: 0,0 */ }
-.u  { left: calc(var(--circle-size) * (140 / 110)); }
-.ur { left: calc(var(--circle-size) * (280 / 110)); }
-.l  { top:  calc(var(--circle-size) * (140 / 110)); }
-.c  { left: calc(var(--circle-size) * (140 / 110)); top: calc(var(--circle-size) * (140 / 110)); }
-.r  { left: calc(var(--circle-size) * (280 / 110)); top: calc(var(--circle-size) * (140 / 110)); }
-.dl { top:  calc(var(--circle-size) * (280 / 110)); }
-.d  { left: calc(var(--circle-size) * (140 / 110)); top: calc(var(--circle-size) * (280 / 110)); }
-.dr { left: calc(var(--circle-size) * (280 / 110)); top: calc(var(--circle-size) * (280 / 110)); }
-
-#bigText {
-  font-size: 25px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.85rem;
   font-weight: bold;
-  color: red;
-}
-
-#letterButtons {
-  display: grid;
-  gap: 10px;
-  max-width: 400px;
-  margin: 10px auto;
-  padding: 10px;
-}
-
-.two-columns {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.six-columns {
-  grid-template-columns: repeat(6, 1fr);
-}
-
-#letterButtons button,
-#letterButtons #timer {
-  font-size: 1.2em;
-  padding: 15px 0;
   border: none;
-  border-radius: 10px;
-  background-color: #444;
-  color: white;
-  text-align: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
 }
 
-#letterButtons #timer {
-  grid-column: 5 / span 2;
-  margin-bottom: 0;
+.help-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.help-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  width: 260px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.help-popup b {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.help-popup b:first-child {
   margin-top: 0;
 }
 
-button {
-  font-size: 16px;
-  touch-action: manipulation;
+/* ── Main two-column layout ──────────────────────────────────── */
+.main-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-#scramble:hover,
-#clock:hover,
-button:hover,
-select:hover,
-input:hover {
+/* ── Clock panel ─────────────────────────────────────────────── */
+.clock-panel {
+  flex-shrink: 0;
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clock-hint {
+  font-size: 0.75rem;
+  color: #aaa;
+  text-align: center;
+}
+
+/* ── Clock outer circular bezel ──────────────────────────────── */
+.clock-body {
+  border-radius: 50%;
+  background: #2a2a2a;
+  width: calc(var(--cell-size) * (485 / 110));
+  height: calc(var(--cell-size) * (485 / 110));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+/* ── Clock grid ──────────────────────────────────────────────── */
+#clock {
+  position: relative;
+  width: calc(var(--cell-size) * (280 / 110) + var(--circle-size));
+  height: calc(var(--cell-size) * (280 / 110) + var(--circle-size));
+  flex-shrink: 0;
+}
+
+/* ── Controls panel ──────────────────────────────────────────── */
+.controls-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Card ────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+}
+
+/* ── Memo status ─────────────────────────────────────────────── */
+.memo-status h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.1rem;
+}
+
+/* ── Scramble bar ────────────────────────────────────────────── */
+.scramble-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.scramble-text {
+  flex: 1;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.scramble-text:hover {
+  color: white;
+}
+
+/* ── Row: simul type + enter scramble ────────────────────────── */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.row label {
+  font-size: 0.9rem;
+}
+
+/* ── Accordion (settings) ────────────────────────────────────── */
+.accordion-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: white;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.accordion-btn:hover {
+  background: #3a3a3a;
+}
+
+.accordion-body {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.accordion-body label {
   cursor: pointer;
 }
 
+.accordion-body input[type="radio"],
+.accordion-body input[type="checkbox"] {
+  margin-right: 0.4rem;
+  cursor: pointer;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.stat-action-btn {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.stat-action-btn:hover {
+  background: #4a4a4a;
+}
+
+/* ── Custom pin section ──────────────────────────────────────── */
+.custom-pin-card {
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.custom-pin-card select {
+  background: var(--surface2);
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.2rem 0.4rem;
+}
+
+/* ── Stats ───────────────────────────────────────────────────── */
 #statsContainer {
   display: flex;
-  margin: 20px 0;
+  justify-content: center;
+}
+
+#normalStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   justify-content: center;
 }
 
 .statCard {
-  background-color: #292929;
-  border: 1px solid #ffffff;
-  padding: 12px 18px;
+  background: var(--surface2);
+  border: 1px solid #fff;
+  padding: 0.6rem 1rem;
   border-radius: 8px;
-  min-width: 120px;
+  min-width: 100px;
   text-align: center;
 }
 
 .statLabel {
-  font-size: 12px;
-  color: #fafafa;
+  font-size: 0.7rem;
+  color: #ccc;
   margin-bottom: 4px;
 }
 
 .statValue {
-  font-size: 20px;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 
-#normalStats {
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
+/* ── Letter buttons ──────────────────────────────────────────── */
+#letterButtons {
+  display: grid;
+  gap: 8px;
+  max-width: 400px;
+  padding: 0;
+  margin: 0;
+}
+
+.two-columns  { grid-template-columns: repeat(2, 1fr); }
+.six-columns  { grid-template-columns: repeat(6, 1fr); }
+
+#letterButtons button,
+#letterButtons #timer {
+  font-size: 1.1em;
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  background: #444;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+}
+
+#letterButtons #timer {
+  grid-column: 5 / span 2;
+  margin: 0;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+}
+
+/* ── Timer standalone ────────────────────────────────────────── */
+.timer-display {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* ── Shared button ───────────────────────────────────────────── */
+button {
+  font-size: 0.9rem;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+select {
+  background: var(--surface2);
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
+
+.action-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: white;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-btn:hover {
+  background: #3a3a3a;
+}
+
+/* ── Pairs checkboxes ────────────────────────────────────────── */
+.pairs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pairs-row label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+/* ── Clock face elements ─────────────────────────────────────── */
+.circle {
+  aspect-ratio: 1 / 1;
+  width: var(--circle-size);
+  border-radius: 50%;
+  position: absolute;
+}
+
+.circle-face {
+  position: absolute;
+  border-radius: 50%;
+  width: calc(var(--circle-size) * (74 / 110));
+  height: calc(var(--circle-size) * (74 / 110));
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Tapered clock hand — pivot is at center of clock face (transform-origin: center bottom) */
+.dial {
+  width: calc(var(--circle-size) * (15 / 110));
+  height: calc(var(--circle-size) * (45 / 110));
+  position: absolute;
+  transform-origin: center 77.78%;
+
+  /* Centers hand horizontally on circle: (cs/2 - width/2) = (55-7.5)/110 */
+  --tx: calc(var(--circle-size) * (47 / 110));
+  /* Pivot at circle center: ty + 77.78% * h = 20 + 35 = 55 */
+  --ty: calc(var(--circle-size) * (20 / 110));
+  --rot: 0deg;
+
+  transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
+  clip-path: polygon(50% 0%, 85% 48%, 50% 78%, 15% 48%);
+}
+
+/* Small circle at the pivot (clock center), rendered on top of dial base */
+.dial-base {
+  width: calc(var(--circle-size) * (12 / 110));
+  height: calc(var(--circle-size) * (12 / 110));
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(calc(var(--circle-size) * (49 / 110)), calc(var(--circle-size) * (49 / 110)));
+}
+
+/* 12 o'clock reference mark — two parallel vertical rectangles inside the bezel */
+.twelve {
+  width: calc(var(--circle-size) * (7 / 110));
+  height: calc(var(--circle-size) * (10 / 110));
+  border-radius: 0;
+  position: absolute;
+  background-color: red;
+  /* Centered at (55, 9): left = 55-4.5=50.5→51 */
+  transform: translate(
+    calc(var(--circle-size) * (51 / 110)),
+    calc(var(--circle-size) * (5 / 110))
+  );
+  /* Mask cuts the rectangle into two vertical stripes with a gap in the middle */
+  mask: linear-gradient(to right, #000 33%, transparent 33%, transparent 67%, #000 67%);
+  -webkit-mask: linear-gradient(to right, #000 33%, transparent 33%, transparent 67%, #000 67%);
+}
+
+/* Hour position dots — small circles orbiting in the bezel area.
+   translate(52, 7) centers dot at (55, 10) before rotation.
+   transform-origin(3, 48) makes orbit center = (52+3, 7+48) = (55,55) = circle center. */
+.one   { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(30deg);  transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
+.two   { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(60deg);  transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
+.three { width:calc(var(--circle-size)*(2/110)); height:calc(var(--circle-size)*(7/110)); border-radius:0; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(6/110))) rotate(90deg);  transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(49/110)); }
+.four  { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(120deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
+.five  { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(150deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
+.six   { width:calc(var(--circle-size)*(2/110)); height:calc(var(--circle-size)*(7/110)); border-radius:0; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(6/110))) rotate(180deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(49/110)); }
+
+/* x2 flip: swap double-line to six, reduce twelve to single line */
+.twelve.single-marker {
+  width: calc(var(--circle-size) * (2 / 110));
+  height: calc(var(--circle-size) * (7 / 110));
+  transform: translate(calc(var(--circle-size) * (54 / 110)), calc(var(--circle-size) * (6 / 110)));
+  mask: none;
+  -webkit-mask: none;
+}
+.six.double-marker {
+  width: calc(var(--circle-size) * (7 / 110));
+  height: calc(var(--circle-size) * (10 / 110));
+  transform: translate(calc(var(--circle-size) * (51 / 110)), calc(var(--circle-size) * (5 / 110))) rotate(180deg);
+  transform-origin: calc(var(--circle-size) * (4 / 110)) calc(var(--circle-size) * (50 / 110));
+  mask: linear-gradient(to right, #000 33%, transparent 33%, transparent 67%, #000 67%);
+  -webkit-mask: linear-gradient(to right, #000 33%, transparent 33%, transparent 67%, #000 67%);
+}
+.seven { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(210deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
+.eight { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(240deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
+.nine  { width:calc(var(--circle-size)*(2/110)); height:calc(var(--circle-size)*(7/110)); border-radius:0; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(6/110))) rotate(270deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(49/110)); }
+.ten   { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(300deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
+.eleven{ width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(330deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
+
+/* ── Pin dots between clock faces ────────────────────────────── */
+/* Centers of gaps: gap between circles at 0 and 140 (each 110px) = center at 125 */
+.pin-dot {
+  width: calc(var(--circle-size) * (24 / 110));
+  height: calc(var(--circle-size) * (24 / 110));
+  border-radius: 50%;
+  background: #c8c8c8;
+  position: absolute;
+}
+.pin-ul { left: calc(var(--circle-size) * (43 / 110) + var(--cell-size) * (70 / 110)); top:  calc(var(--circle-size) * (43 / 110) + var(--cell-size) * (70 / 110)); }
+.pin-ur { left: calc(var(--cell-size) * (210 / 110) + var(--circle-size) * (43 / 110)); top:  calc(var(--circle-size) * (43 / 110) + var(--cell-size) * (70 / 110)); }
+.pin-dl { left: calc(var(--circle-size) * (43 / 110) + var(--cell-size) * (70 / 110)); top:  calc(var(--cell-size) * (210 / 110) + var(--circle-size) * (43 / 110)); }
+.pin-dr { left: calc(var(--cell-size) * (210 / 110) + var(--circle-size) * (43 / 110)); top:  calc(var(--cell-size) * (210 / 110) + var(--circle-size) * (43 / 110)); }
+
+/* Clock face positions — use --cell-size for spacing, --circle-size for face size */
+.ul { /* 0,0 */ }
+.u  { left: calc(var(--cell-size) * (140 / 110)); }
+.ur { left: calc(var(--cell-size) * (280 / 110)); }
+.l  { top:  calc(var(--cell-size) * (140 / 110)); }
+.c  { left: calc(var(--cell-size) * (140 / 110)); top: calc(var(--cell-size) * (140 / 110)); }
+.r  { left: calc(var(--cell-size) * (280 / 110)); top: calc(var(--cell-size) * (140 / 110)); }
+.dl { top:  calc(var(--cell-size) * (280 / 110)); }
+.d  { left: calc(var(--cell-size) * (140 / 110)); top: calc(var(--cell-size) * (280 / 110)); }
+.dr { left: calc(var(--cell-size) * (280 / 110)); top: calc(var(--cell-size) * (280 / 110)); }
+
+/* ── Session tabs ────────────────────────────────────────────── */
+.session-tabs {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.session-tab {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: #aaa;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-width: 2rem;
+}
+
+.session-tab:hover {
+  background: #3a3a3a;
+  color: white;
+}
+
+.session-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+/* ── Stats table ─────────────────────────────────────────────── */
+.stats-table-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 300px;
+  margin-top: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.stats-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.stats-table th {
+  background: #1a1a1a;
+  color: #aaa;
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-weight: normal;
+}
+
+.stats-table td {
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.stats-table tr:last-child td {
+  border-bottom: none;
+}
+
+.stats-table tr:hover td {
+  background: #2a2a2a;
+}
+
+.row-delete-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  line-height: 1;
+}
+
+.row-delete-btn:hover {
+  color: #f87171;
+}
+
+/* ── Toast notification ──────────────────────────────────────── */
+@keyframes toast-in {
+  from { transform: translateX(-50%) translateY(-110%); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);     opacity: 1; }
+}
+
+#toast-box {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e1e1e;
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1.4rem;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 9999;
+  cursor: pointer;
+  white-space: nowrap;
+  animation: toast-in 0.25s ease;
+}
+
+/* ── Mobile ───────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  :root {
+    --cell-size: min(22vw, 80px);
+    --circle-size: min(27vw, 97px);
+  }
+
+  .main-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .clock-panel {
+    position: static;
+    width: 100%;
+    align-items: center;
+  }
+
+  .controls-panel {
+    width: 100%;
+  }
+
+
 }

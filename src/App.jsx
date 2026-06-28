@@ -1,23 +1,29 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Clock from './components/Clock';
 import MemoInput from './components/MemoInput';
 import Stats from './components/Stats';
+import Toast from './components/Toast';
 import {
   checkPinOrder, generateScrambleText, scrambleconvert,
-  computeMemoForPairs, LETTER_MAPS, DEFAULT_PIN_ORDERS,
+  computeMemoForPairs, swapSides, LETTER_MAPS, DEFAULT_PIN_ORDERS,
 } from './logic/clockLogic';
+import { celebrate } from './logic/celebration';
 import {
-  loadStats, addStatRow, deleteLastStat, clearStats, computeInstantStats,
+  loadStats, addStatRow, deleteStatAt, clearStats, computeInstantStats,
   exportStatsCsv, isPracticeMode, setPracticeMode, isTrainerMode, setTrainerMode,
-  getInputLetterType, setInputLetterType, getTimerPref, setTimerPref,
+  getActiveSession, setActiveSession, NUM_STAT_SESSIONS,
+  getInputLetterType, setInputLetterType, getCustomChars, setCustomChars, getTimerPref, setTimerPref,
   getHideHourIndicators, setHideHourIndicators,
+  getCustomPinOrder, setCustomPinOrder, getSavedCheckedPairs, setSavedCheckedPairs,
+  getSwapM3M4, setSwapM3M4Pref,
 } from './logic/storage';
 import './App.css';
 
 function getSimulTypeFromURL() {
   const params = new URLSearchParams(window.location.search);
-  const type = (params.get('type') || 'bpaul').toLowerCase();
-  return type === 'tommy' ? 'Tommy' : 'BPaul';
+  const type = (params.get('type') || 'tommy').toLowerCase();
+  if (type === 'custom') return 'Custom';
+  return type === 'bpaul' ? 'BPaul' : 'Tommy';
 }
 
 function getFlipTypeForSimul(simultype) {
@@ -26,18 +32,61 @@ function getFlipTypeForSimul(simultype) {
 
 function getPinOrderStrForSimultype(simultype) {
   if (simultype === 'BPaul') return DEFAULT_PIN_ORDERS.BPaul;
+  if (simultype === 'Custom') return getCustomPinOrder() || DEFAULT_PIN_ORDERS.Tommy;
   return DEFAULT_PIN_ORDERS.Tommy;
 }
 
 function getDefaultCheckedPairs(pinOrderStr, simultype) {
   const items = pinOrderStr.split(' ');
   if (simultype === 'Tommy') {
-    return items.filter(item => ['dl', 'R', '\\', 'UL', 'L'].includes(item));
+    return items.filter(item => ['dl', 'R', '\\'].includes(item));
   }
   return items.filter(item => ['dl', 'R', 'ur', 'L'].includes(item));
 }
 
 const ZERO_RANDOM = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+function InfoTooltip({ text }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="help-wrapper" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} style={{ position: 'relative', top: '-1px' }}>
+      <button className="help-btn" tabIndex={-1} style={{ width: '1.1rem', height: '1.1rem', fontSize: '0.7rem' }}>?</button>
+      {open && <div className="help-popup" style={{ fontSize: '0.8rem', width: '200px', right: 'auto', left: 0 }}>{text}</div>}
+    </span>
+  );
+}
+
+function HelpPopup() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, [open]);
+
+  return (
+    <span className="help-wrapper" ref={ref}>
+      <button className="help-btn" onClick={() => setOpen(v => !v)} aria-label="Help">?</button>
+      {open && (
+        <div className="help-popup">
+          <b>How to use</b>
+          Scramble the clock and enter your memo starting from the face shown, flipping the puzzle as needed. Open <strong style={{ display: 'inline' }}>Settings</strong> to customise your memo input characters and more. Your solve history is in the <strong style={{ display: 'inline' }}>Stats Settings</strong>, where you can switch between multiple sessions to track different practice sets.
+          <b>Controls</b>
+          <span><strong style={{ display: 'inline' }}>Space / Click Clock:</strong> Flip</span><br />
+          <span><strong style={{ display: 'inline' }}>Enter / ✓:</strong> Check Memo</span><br />
+          <span><strong style={{ display: 'inline' }}>S / 🔀:</strong> Scramble</span><br />
+          <span><strong style={{ display: 'inline' }}>Backspace / ⌫:</strong> Delete</span><br />
+          <span><strong style={{ display: 'inline' }}>📋 / Click Scramble:</strong> Copy</span>
+        </div>
+      )}
+    </span>
+  );
+}
 
 export default function App() {
   const isMobile = /android|iphone|kindle|ipad/i.test(navigator.userAgent);
@@ -49,40 +98,46 @@ export default function App() {
     ? [initPinOutput[0].split(' '), initPinOutput[1].split(' '), initPinOutput[2]]
     : null;
 
-  // Persisted preferences
   const [simultype, setSimultype] = useState(initSimultype);
   const [inputType, setInputType] = useState(() => getInputLetterType());
+  const [customChars, setCustomCharsState] = useState(() => getCustomChars());
   const [executionMode, setExecutionMode] = useState(() => isTrainerMode());
-  const [timerEnabled, setTimerEnabled] = useState(() => getTimerPref());
+  const timerEnabled = true;
   const [hideHourIndicatorsState, setHideHourIndicatorsState] = useState(() => getHideHourIndicators());
+  const [swapM3M4, setSwapM3M4] = useState(() => getSwapM3M4());
   const [practiceMode, setPracticeModeState] = useState(() => isPracticeMode());
   const [flipType, setFlipType] = useState(() => getFlipTypeForSimul(initSimultype));
 
-  // Clock/game state
   const [side, setSide] = useState('white');
   const [random, setRandom] = useState(ZERO_RANDOM);
   const [scrambletext, setScrambletext] = useState('');
   const previousScrambleRef = useRef('');
+  const hasCheckedRef = useRef(false);
   const [memo, setMemo] = useState('');
   const [checkResult, setCheckResult] = useState({ text: 'Enter Memo', color: 'white' });
   const [memoDisplay, setMemoDisplay] = useState('Memo: ');
-  const [memoColor, setMemoColor] = useState('white');
+  const [memoColorData, setMemoColorData] = useState(null); // { userMemo, realMemo } | null
 
-  // Pin order / custom
   const [pinOrderStr, setPinOrderStr] = useState(initPinOrderStr);
   const [order, setOrder] = useState(initOrder);
-  const [checkedPairs, setCheckedPairs] = useState(() => getDefaultCheckedPairs(initPinOrderStr, initSimultype));
+  const [checkedPairs, setCheckedPairs] = useState(() => {
+    if (initSimultype === 'Custom') return getSavedCheckedPairs() ?? getDefaultCheckedPairs(initPinOrderStr, initSimultype);
+    return getDefaultCheckedPairs(initPinOrderStr, initSimultype);
+  });
   const [umoveLeft, setUmoveLeft] = useState(false);
   const [dmoveLeft, setDmoveLeft] = useState(false);
-  const [showCustomPin, setShowCustomPin] = useState(false);
+  const [showCustomPin, setShowCustomPin] = useState(initSimultype === 'Custom');
 
-  // UI toggles
+  const [toastMsg, setToastMsg] = useState('');
+  function toast(msg) { setToastMsg(msg); }
+
   const [showInputButtons, setShowInputButtons] = useState(isMobile);
   const [showMoreSettings, setShowMoreSettings] = useState(false);
   const [showStatSettings, setShowStatSettings] = useState(false);
+  const [activeSession, setActiveSessionState] = useState(() => getActiveSession());
   const [stats, setStats] = useState(() => computeInstantStats());
+  const [statRows, setStatRows] = useState(() => loadStats());
 
-  // Timer
   const [timerDisplay, setTimerDisplay] = useState('0.00');
   const timerRef = useRef({ isRunning: false, startTime: 0, raf: null, seconds: 0 });
 
@@ -116,29 +171,45 @@ export default function App() {
     setTimerDisplay('0.00');
   }
 
-  function restartTimer() { resetTimer(); startTimer(); }
+  function restartTimer(delay = 0) {
+    resetTimer();
+    if (delay > 0) {
+      setTimeout(startTimer, delay);
+    } else {
+      startTimer();
+    }
+  }
 
-  const letterMap = LETTER_MAPS[inputType] || LETTER_MAPS.letters;
+  const effectiveChars = customChars.length >= 12 ? customChars : 'ABCDEFGHIJKL';
+  const chars = effectiveChars.padEnd(12, ' ').slice(0, 12).split('');
+  const letterMap = [chars[11], ...chars.slice(0, 11)];
 
-  function getMemo(rnd, ord, sim, lm, pairs, uL, dL) {
+  function getMemo(rnd, ord, sim, lm, pairs, uL, dL, swap = swapM3M4) {
     if (!ord || pairs.length === 0) return '';
-    return computeMemoForPairs(rnd, ord, sim, lm, pairs, uL, dL);
+    const state = sim === 'BPaul' ? rnd : swapSides(rnd);
+    let memo = computeMemoForPairs(state, ord, sim, lm, pairs, uL, dL);
+    if (swap && sim !== 'BPaul' && memo.length >= 5) {
+      const chars = memo.replace(/ /g, '');
+      const swapped = chars.slice(0, 2) + chars[3] + chars[2] + chars.slice(4);
+      memo = swapped.match(/.{1,2}/g).join(' ') + ' ';
+    }
+    return memo;
   }
 
   function flip() {
     setSide(prev => prev === 'white' ? 'black' : 'white');
   }
 
-  // Use refs for stable callback access in keyboard handler
   const stateRef = useRef({});
   stateRef.current = {
     executionMode, memo, random, order, simultype, letterMap, checkedPairs,
-    umoveLeft, dmoveLeft, scrambletext, timerEnabled, flipType, side,
+    umoveLeft, dmoveLeft, scrambletext, timerEnabled, flipType, side, customChars, swapM3M4,
   };
 
   function doScramble(rnd, sctext, execMode, ord, sim, lm, pairs, uL, dL, timerOn) {
+    hasCheckedRef.current = false;
     setCheckResult({ text: execMode ? 'Execution Trainer Mode' : 'Enter Memo', color: 'white' });
-    setMemoColor('white');
+    setMemoColorData(null);
     setMemo('');
     setScrambletext(sctext);
     setRandom(rnd);
@@ -149,11 +220,16 @@ export default function App() {
       const m = getMemo(rnd, ord, sim, lm, pairs, uL, dL);
       setMemoDisplay('Memo: ' + m);
     }
-    if (timerOn) restartTimer();
+    if (timerOn) restartTimer(800);
   }
 
   function scramble() {
     const s = stateRef.current;
+    if (s.customChars.length < 12) {
+      const defaultChars = 'ABCDEFGHIJKL';
+      setCustomCharsState(defaultChars);
+      setCustomChars(defaultChars);
+    }
     const sctext = generateScrambleText();
     const rnd = scrambleconvert(sctext);
     doScramble(rnd, sctext, s.executionMode, s.order, s.simultype, s.letterMap, s.checkedPairs, s.umoveLeft, s.dmoveLeft, s.timerEnabled);
@@ -162,6 +238,7 @@ export default function App() {
   function enterScramble() {
     const entered = prompt('Enter Scramble:');
     if (!entered) return;
+    hasCheckedRef.current = false;
     const rnd = scrambleconvert(entered);
     const s = stateRef.current;
     setRandom(rnd);
@@ -173,21 +250,23 @@ export default function App() {
       const m = getMemo(rnd, s.order, s.simultype, s.letterMap, s.checkedPairs, s.umoveLeft, s.dmoveLeft);
       setMemoDisplay('Memo: ' + m);
     }
-    restartTimer();
+    restartTimer(800);
   }
 
   function checkMemo() {
     const s = stateRef.current;
-    if (!s.memo) return;
-    const realMemo = getMemo(s.random, s.order, s.simultype, s.letterMap, s.checkedPairs, s.umoveLeft, s.dmoveLeft);
+    if (!s.memo || hasCheckedRef.current) return;
+    hasCheckedRef.current = true;
+    const realMemo = getMemo(s.random, s.order, s.simultype, s.letterMap, s.checkedPairs, s.umoveLeft, s.dmoveLeft, s.swapM3M4);
     const isCorrect = s.memo === realMemo;
 
     if (isCorrect) {
       setCheckResult({ text: 'Correct!', color: 'green' });
-      setMemoColor('white');
+      setMemoColorData(null);
+      celebrate();
     } else {
       setCheckResult({ text: `Correct memo: ${realMemo}`, color: 'white' });
-      setMemoColor('red');
+      setMemoColorData({ userMemo: s.memo, realMemo });
     }
 
     if (previousScrambleRef.current !== s.scrambletext && !isPracticeMode()) {
@@ -200,42 +279,64 @@ export default function App() {
         is_correct: isCorrect,
         scramble: s.scrambletext,
       });
-      setStats(computeInstantStats());
+      refreshStats();
       previousScrambleRef.current = s.scrambletext;
     }
     stopTimer();
   }
 
   function appendLetter(letter) {
+    if (hasCheckedRef.current) return;
+    setMemoColorData(null);
     setMemo(prev => {
+      const maxLen = stateRef.current.checkedPairs.length * 3;
       let m = prev;
-      if (m.length >= 20) return m;
+      if (m.length >= maxLen) return m;
       m += letter;
-      if ([2, 5, 8, 11, 14, 17].includes(m.length)) m += ' ';
+      // Add space after every completed pair (every 2nd letter)
+      if (m.replace(/ /g, '').length % 2 === 0) m += ' ';
       setMemoDisplay('Memo: ' + m);
       return m;
     });
   }
 
   function deleteLetter() {
+    if (hasCheckedRef.current) return;
     setMemo(prev => {
-      let m = [3, 6, 9, 12, 15, 18].includes(prev.length)
-        ? prev.slice(0, -2)
-        : prev.slice(0, -1);
+      let m = prev.endsWith(' ') ? prev.slice(0, -2) : prev.slice(0, -1);
       setMemoDisplay('Memo: ' + m);
       return m;
     });
   }
 
-  function copyScramble() {
-    navigator.clipboard.writeText(stateRef.current.scrambletext);
-    alert('Copied scramble to clipboard!');
+  async function copyScramble() {
+    const text = stateRef.current.scrambletext;
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('Copied scramble to clipboard!');
+    } catch {
+      // Fallback for non-secure HTTP contexts (e.g. local network)
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(el);
+      el.focus();
+      el.select();
+      try {
+        document.execCommand('copy');
+        toast('Copied scramble to clipboard!');
+      } catch {
+        toast('Could not copy scramble.');
+      }
+      document.body.removeChild(el);
+    }
   }
 
   function applyPinOrder(pinStr, simType, isChange) {
     const out = checkPinOrder(pinStr);
     if (!out) {
-      if (isChange) alert("That's not a pin order! Please try again.");
+      if (isChange) toast("That's not a pin order! Please try again.");
       return false;
     }
     const newOrder = [out[0].split(' '), out[1].split(' '), out[2]];
@@ -244,6 +345,10 @@ export default function App() {
     setPinOrderStr(newPinStr);
     setOrder(newOrder);
     setCheckedPairs(defaultPairs);
+    if (simType === 'Custom') {
+      setCustomPinOrder(newPinStr);
+      setSavedCheckedPairs(defaultPairs);
+    }
     return { newOrder, defaultPairs };
   }
 
@@ -256,19 +361,12 @@ export default function App() {
     const pinStr = getPinOrderStrForSimultype(newType === 'Custom' ? 'Tommy' : newType);
     applyPinOrder(pinStr, newType, false);
 
-    if (newType === 'Tommy' || newType === 'BPaul') {
-      const params = new URLSearchParams(window.location.search);
-      params.set('type', newType.toLowerCase());
-      window.history.replaceState({}, '', '?' + params.toString());
-    } else {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
+    const params = new URLSearchParams(window.location.search);
+    params.set('type', newType.toLowerCase());
+    window.history.replaceState({}, '', '?' + params.toString());
 
     setSide('white');
-
-    if (!stateRef.current.executionMode) {
-      setMemoDisplay('Memo: ');
-    }
+    if (!stateRef.current.executionMode) setMemoDisplay('Memo: ');
   }
 
   function handleChangePinOrder() {
@@ -291,7 +389,6 @@ export default function App() {
       setMemoDisplay('Memo: ');
       setCheckResult({ text: 'Enter Memo', color: 'white' });
     }
-    // Scramble to start fresh
     const sctext = generateScrambleText();
     const rnd = scrambleconvert(sctext);
     setRandom(rnd);
@@ -307,7 +404,6 @@ export default function App() {
     }
   }
 
-  // Update memo display when execution mode is active and dependencies change
   useEffect(() => {
     if (executionMode && order) {
       const m = getMemo(random, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft);
@@ -315,9 +411,9 @@ export default function App() {
     }
   }, [executionMode, random, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     function onKeyDown(e) {
+      if (document.activeElement && document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'text') return;
       const s = stateRef.current;
       if (e.key === ' ') {
         e.preventDefault();
@@ -345,27 +441,34 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  // Stats handlers
+  function refreshStats() {
+    setStats(computeInstantStats());
+    setStatRows(loadStats());
+  }
+
+  function handleSwitchSession(n) {
+    setActiveSession(n);
+    setActiveSessionState(n);
+    setStats(computeInstantStats(n));
+    setStatRows(loadStats(n));
+  }
+
   function handleExportStats() { exportStatsCsv(); }
 
-  function handleDeleteLastStat() {
-    const s = loadStats();
-    if (!s || s.length === 0) { alert('No stat to delete.'); return; }
-    const ok = confirm('Delete your most recent stat?');
-    if (!ok) { alert('Deleting last stat aborted.'); return; }
-    deleteLastStat();
-    alert('Last stat deleted successfully.');
-    setStats(computeInstantStats());
+  function handleDeleteStatAt(index) {
+    if (!confirm(`Delete attempt #${index + 1}?`)) return;
+    deleteStatAt(index);
+    refreshStats();
   }
 
   function handleClearStats() {
     const s = loadStats();
-    if (!s || s.length === 0) { alert('No stats to clear.'); return; }
+    if (!s || s.length === 0) { toast('No stats to clear.'); return; }
     const ok = prompt('Type "DELETE" to clear all stats.') === 'DELETE';
-    if (!ok) { alert('Clearing stats aborted.'); return; }
+    if (!ok) { toast('Clearing stats aborted.'); return; }
     clearStats();
-    setStats(computeInstantStats());
-    alert('Stats cleared.');
+    refreshStats();
+    toast('Stats cleared.');
   }
 
   function handlePracticeModeChange(checked) {
@@ -390,15 +493,24 @@ export default function App() {
     setInputType(type);
   }
 
+  function handleCustomCharsChange(e) {
+    const unique = [...e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()]
+      .filter((ch, i, arr) => arr.indexOf(ch) === i)
+      .join('').slice(0, 12);
+    setCustomCharsState(unique);
+    setCustomChars(unique);
+  }
+
   function handleFlipTypeChange(newFlipType) {
     if (stateRef.current.side === 'black') flip();
     setFlipType(newFlipType);
-    alert(`Flip type changed to ${newFlipType}!`);
+    toast(`Flip type changed to ${newFlipType}`);
   }
 
   function handleCheckedPairToggle(pairName, checked) {
     setCheckedPairs(prev => {
       const next = checked ? [...prev, pairName] : prev.filter(p => p !== pairName);
+      if (simultype === 'Custom') setSavedCheckedPairs(next);
       if (executionMode && order) {
         const m = getMemo(random, order, simultype, letterMap, next, umoveLeft, dmoveLeft);
         setMemoDisplay('Memo: ' + m);
@@ -410,28 +522,54 @@ export default function App() {
   const pinItems = pinOrderStr.split(' ');
 
   return (
-    <>
-      <h1 id="title"><u>7 Simul Memo Trainer</u></h1>
+    <div className="app-container">
+      <Toast message={toastMsg} onDismiss={() => setToastMsg('')} />
 
-      <div id="underClock">
-        <div>
-          <h2 id="correctMemo" style={{ color: checkResult.color, marginBottom: 0 }}>
-            {checkResult.text}
-          </h2>
-          <h2 id="memo" style={{ color: memoColor, marginTop: 0, marginBottom: 0 }}>
-            {memoDisplay}
-          </h2>
+      {/* ── Header ── */}
+      <header className="app-header">
+        <h1>7 Simul Memo Trainer</h1>
+        <HelpPopup />
+      </header>
 
-          {timerEnabled && !executionMode && !showInputButtons && (
-            <h2 id="timer">{timerDisplay}</h2>
-          )}
+      {/* ── Main two-column layout ── */}
+      <div className="main-layout">
 
-          <div id="timerholder">
-            {timerEnabled && !executionMode && showInputButtons && (
-              <h2 id="timer" style={{ display: 'block' }}>{timerDisplay}</h2>
+        {/* ── Left: Clock ── */}
+        <div className="clock-panel">
+          <Clock
+            random={random}
+            side={side}
+            flipType={flipType}
+            hideHourIndicators={hideHourIndicatorsState}
+            onFlip={flip}
+          />
+        </div>
+
+        {/* ── Right: Controls ── */}
+        <div className="controls-panel">
+
+          {/* Memo status */}
+          <div className="card memo-status">
+            <h2 style={{ color: checkResult.color, margin: '0 0 0.2rem' }}>{checkResult.text}</h2>
+            <h2 style={{ margin: 0 }}>
+              {'Memo: '}
+              {executionMode
+                ? memoDisplay.slice(6)
+                : memoColorData
+                  ? memoColorData.userMemo.split('').map((ch, i) =>
+                      ch === ' '
+                        ? <span key={i}> </span>
+                        : <span key={i} style={{ color: memoColorData.realMemo[i] === ch ? '#22c55e' : 'red' }}>{ch}</span>
+                    )
+                  : memo
+              }
+            </h2>
+            {timerEnabled && !executionMode && !showInputButtons && (
+              <p className="timer-display">{timerDisplay}</p>
             )}
           </div>
 
+          {/* Memo input buttons */}
           <MemoInput
             letterMap={letterMap}
             memo={memo}
@@ -446,172 +584,220 @@ export default function App() {
             timerEnabled={timerEnabled}
           />
 
-          <h2 id="scramble" style={{ cursor: 'pointer' }} onClick={copyScramble}>
-            <span id="scramblebox">
-              {scrambletext || 'Press S or click 🔀 to scramble'}
+          {/* Scramble bar */}
+          <div className="card scramble-bar">
+            <span className="scramble-text" onClick={copyScramble} title="Click to copy">
+              {scrambletext || (showInputButtons ? 'Press S or 🔀 to scramble' : 'Press S to scramble')}
             </span>
-          </h2>
-
-          <label htmlFor="simultype">7 Simul Type: </label>
-          <select
-            id="simultype"
-            value={simultype}
-            onChange={e => changeSimultype(e.target.value)}
-          >
-            <option value="BPaul">BPaul</option>
-            <option value="Tommy">Tommy</option>
-            <option value="Custom">Custom</option>
-          </select>
-        </div>
-
-        <div id="customPin" style={{ display: showCustomPin ? 'block' : 'none' }}>
-          Pin order: <span id="pinOrder">{pinOrderStr}</span>{' '}
-          <button onClick={handleChangePinOrder}>Change</button>
-          <div id="udselect">
-            {pinItems.includes('U') && (
-              <span>
-                execute the U move with your:{' '}
-                <select value={umoveLeft ? 'left' : 'right'} onChange={e => setUmoveLeft(e.target.value === 'left')}>
-                  <option value="left">left hand</option>
-                  <option value="right">right hand</option>
-                </select>{' '}
-              </span>
-            )}
-            {pinItems.includes('D') && (
-              <span>
-                execute the D move with your:{' '}
-                <select value={dmoveLeft ? 'left' : 'right'} onChange={e => setDmoveLeft(e.target.value === 'left')}>
-                  <option value="left">left hand</option>
-                  <option value="right">right hand</option>
-                </select>
-              </span>
-            )}
+            <button className="action-btn" onClick={copyScramble} title="Copy scramble">📋</button>
           </div>
-          <div id="pairs">
-            Select which moves to memo:{' '}
-            {pinItems.map(item => (
-              <span key={item}>
-                <input
-                  type="checkbox"
-                  id={`pair-${item}`}
-                  checked={checkedPairs.includes(item)}
-                  onChange={e => handleCheckedPairToggle(item, e.target.checked)}
-                />
-                <label htmlFor={`pair-${item}`}>{item}</label>{' '}
-              </span>
-            ))}
+
+          {/* Simul type + enter scramble */}
+          <div className="card row">
+            <label htmlFor="simultype">Type:</label>
+            <select
+              id="simultype"
+              value={simultype}
+              onChange={e => changeSimultype(e.target.value)}
+            >
+              <option value="BPaul">BPaul</option>
+              <option value="Tommy">Tommy</option>
+              <option value="Custom">Custom</option>
+            </select>
+            <button className="action-btn" onClick={enterScramble}>Enter Scramble</button>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}>
+              <input
+                type="checkbox"
+                checked={showInputButtons}
+                onChange={e => setShowInputButtons(e.target.checked)}
+              />
+              Show input buttons <InfoTooltip text="Shows on-screen buttons for entering memo characters on mobile devices." />
+            </label>
           </div>
-        </div>
 
-        <br />
-        <button onClick={enterScramble}>Enter Scramble</button>
-        <br /><br />
-
-        <div>
-          <label htmlFor="inputButtons">Enable/disable input buttons: </label>
-          <input
-            type="checkbox"
-            id="inputButtons"
-            checked={showInputButtons}
-            onChange={e => setShowInputButtons(e.target.checked)}
-          />
-        </div>
-
-        <br /><br />
-
-        {!executionMode && (
-          <Stats stats={stats} practiceMode={practiceMode} />
-        )}
-
-        <br />
-
-        <p id="info">
-          <b>Info:</b><br />
-          <span id="bigText">
-            To use, enter your memo as if you were to start execution with the white dials facing you.
-            This means that if you are using the order shown in Tommy and Caleb's videos, you must do an x2
-            and start memo on the black dials. You can enter your own scramble by pressing the button.
-            Memo is default to 1-12 as A-L.
-          </span><br />
-          <b>Controls:</b><br />
-          <b>Space</b> or click on clock: flip clock<br />
-          <b>Enter</b> or click ✓: check memo<br />
-          <b>S</b> or click 🔀: scramble<br />
-          <b>Backspace</b> or click ⌫: delete memo<br />
-          <b>Click on scramble</b> or click 📋: copy scramble to clipboard
-        </p>
-
-        <div className="settingsButtonContainer">
-          <button onClick={() => setShowMoreSettings(v => !v)}>More Settings</button>
-          {showMoreSettings && (
-            <div id="hiddenSettings">
-              <b>Memo Input Type:</b><br />
-              <input type="radio" id="letters" name="memoType" value="letters"
-                checked={inputType === 'letters'} onChange={() => handleInputTypeChange('letters')} />
-              <label htmlFor="letters">Letters (A-L for 1-12)</label>
-              <input type="radio" id="ryan" name="memoType" value="ryan"
-                checked={inputType === 'ryan'} onChange={() => handleInputTypeChange('ryan')} />
-              <label htmlFor="ryan">Ryan's method (0-6 and A-E for 12-7 (A is -1))</label>
-              <input type="radio" id="tommy" name="memoType" value="tommy"
-                checked={inputType === 'tommy'} onChange={() => handleInputTypeChange('tommy')} />
-              <label htmlFor="tommy">Tommy (1-6 is A-F and -5 to -1 is G-K, 0 is O)</label>
-              <br />
-              <input type="checkbox" id="executionTrainer" checked={executionMode}
-                onChange={e => toggleExecutionMode(e.target.checked)} />
-              <label htmlFor="executionTrainer">
-                <b>Execution trainer mode:</b> when checked, the memo will be automatically given so you can practice execution.
-              </label>
-              <br />
-              {!executionMode && (
-                <span className="timerButtonGroup">
-                  <input type="checkbox" id="timerButton" checked={timerEnabled}
-                    onChange={e => handleTimerChange(e.target.checked)} />
-                  <label htmlFor="timerButton"><b>Timer:</b> when checked, your memo will be timed.</label>
-                  <br />
-                </span>
-              )}
-              <input type="checkbox" id="hourIndicators" checked={hideHourIndicatorsState}
-                onChange={e => handleHourIndicatorsChange(e.target.checked)} />
-              <label htmlFor="hourIndicators">
-                <b>Hide Hour Indicators:</b> when checked, the hour indicators will be hidden.
-              </label>
-              <br />
-              <label htmlFor="flipType"><b>Flip Type: </b></label>
-              <select id="flipType" value={flipType} onChange={e => handleFlipTypeChange(e.target.value)}>
-                <option value="x2">x2</option>
-                <option value="y2">y2</option>
-              </select>
+          {/* Custom pin order */}
+          {showCustomPin && (
+            <div className="card custom-pin-card">
+              <div className="row">
+                <span>Pin order: <b>{pinOrderStr}</b></span>
+                <button className="action-btn" onClick={handleChangePinOrder}>Change</button>
+              </div>
+              <div className="row">
+                {pinItems.includes('U') && (
+                  <label>
+                    U move hand:{' '}
+                    <select value={umoveLeft ? 'left' : 'right'} onChange={e => setUmoveLeft(e.target.value === 'left')}>
+                      <option value="left">Left</option>
+                      <option value="right">Right</option>
+                    </select>
+                  </label>
+                )}
+                {pinItems.includes('D') && (
+                  <label>
+                    D move hand:{' '}
+                    <select value={dmoveLeft ? 'left' : 'right'} onChange={e => setDmoveLeft(e.target.value === 'left')}>
+                      <option value="left">Left</option>
+                      <option value="right">Right</option>
+                    </select>
+                  </label>
+                )}
+              </div>
+              <div>
+                <span style={{ fontSize: '0.85rem' }}>Memo pairs: </span>
+                <div className="pairs-row">
+                  {pinItems.map(item => (
+                    <label key={item}>
+                      <input
+                        type="checkbox"
+                        checked={checkedPairs.includes(item)}
+                        onChange={e => handleCheckedPairToggle(item, e.target.checked)}
+                      />
+                      {item}
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
-          <br /><br />
-
-          <button onClick={() => setShowStatSettings(v => !v)}>Stats Settings</button>
-          {showStatSettings && (
-            <div id="statHiddenSettings" style={{ display: 'block', marginTop: '10px' }}>
-              <input type="checkbox" id="practiceMode" checked={practiceMode}
-                onChange={e => handlePracticeModeChange(e.target.checked)} />
-              <label htmlFor="practiceMode">
-                <b>Practice Mode:</b> when checked, memo entered will not count towards stats.
-              </label>
-              <br />
-              <button onClick={handleExportStats}>Export stats (CSV)</button>
-              <button onClick={handleDeleteLastStat}>Delete last entry</button>
-              <button onClick={handleClearStats}>Clear stats</button>
-            </div>
+          {/* Stats */}
+          {!executionMode && (
+            <Stats stats={stats} practiceMode={practiceMode} activeSession={activeSession} />
           )}
-        </div>
 
-        <br /><br />
+          {/* Settings accordion */}
+          <div>
+            <button
+              className="accordion-btn"
+              style={{ borderRadius: showMoreSettings ? `${10}px ${10}px 0 0` : undefined }}
+              onClick={() => setShowMoreSettings(v => !v)}
+            >
+              {showMoreSettings ? '▾' : '▸'} Settings
+            </button>
+            {showMoreSettings && (
+              <div className="accordion-body">
+                <div>
+                  <b style={{ fontSize: '0.85rem' }}>Memo Input Characters</b> <InfoTooltip text="Only letters A–Z and digits 0–9 are accepted." />
+                  <div className="setting-row" style={{ marginTop: '0.3rem' }}>
+                    <input
+                      type="text"
+                      value={customChars}
+                      onChange={handleCustomCharsChange}
+                      maxLength={12}
+                      placeholder="ABCDEFGHIJKL"
+                      style={{ fontFamily: 'monospace', width: '9rem', letterSpacing: '0.05em' }}
+                    />
+                    <span style={{ fontSize: '0.8rem', color: customChars.length < 12 ? 'red' : '#aaa' }}>{customChars.length}/12</span>
+                  </div>
+                </div>
+                <label className="setting-row">
+                  <input type="checkbox" checked={executionMode} onChange={e => toggleExecutionMode(e.target.checked)} />
+                  <span><b>Execution trainer mode</b> <InfoTooltip text="Memo is shown automatically for execution practice." /></span>
+                </label>
+                {simultype !== 'BPaul' && (
+                  <label className="setting-row">
+                    <input type="checkbox" checked={swapM3M4} onChange={e => { setSwapM3M4(e.target.checked); setSwapM3M4Pref(e.target.checked); }} />
+                    <span><b>Swap M3 and M4</b> <InfoTooltip text="Swaps the 3rd and 4th memo if you use the memo in Tommy's video." /></span>
+                  </label>
+                )}
+                <label className="setting-row">
+                  <input type="checkbox" checked={hideHourIndicatorsState} onChange={e => handleHourIndicatorsChange(e.target.checked)} />
+                  <span><b>Hide hour indicators</b> <InfoTooltip text="Hides the hour marker dots, training you to judge dial distances rather than counting each dial." /></span>
+                </label>
+                <div className="setting-row">
+                  <label htmlFor="flipType"><b>Flip type:</b></label>
+                  <select id="flipType" value={flipType} onChange={e => handleFlipTypeChange(e.target.value)}>
+                    <option value="x2">x2</option>
+                    <option value="y2">y2</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Stats settings accordion */}
+          <div>
+            <button
+              className="accordion-btn"
+              style={{ borderRadius: showStatSettings ? `${10}px ${10}px 0 0` : undefined }}
+              onClick={() => setShowStatSettings(v => !v)}
+            >
+              {showStatSettings ? '▾' : '▸'} Stats Settings
+            </button>
+            {showStatSettings && (
+              <div className="accordion-body">
+                <label className="setting-row">
+                  <input type="checkbox" checked={practiceMode} onChange={e => handlePracticeModeChange(e.target.checked)} />
+                  <span><b>Practice mode</b> <InfoTooltip text="Attempts will not count towards your stats." /></span>
+                </label>
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: '#aaa', marginBottom: '0.3rem' }}>Session</div>
+                  <div className="session-tabs">
+                    {Array.from({ length: NUM_STAT_SESSIONS }, (_, i) => i + 1).map(n => (
+                      <button
+                        key={n}
+                        className={`session-tab${activeSession === n ? ' active' : ''}`}
+                        onClick={() => handleSwitchSession(n)}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="row" style={{ flexWrap: 'wrap', gap: '0.4rem' }}>
+                  <button className="stat-action-btn" onClick={handleExportStats}>Export CSV</button>
+                  <button className="stat-action-btn" onClick={handleClearStats}>Clear all</button>
+                </div>
+                {statRows.length === 0 ? (
+                  <p style={{ margin: '0.5rem 0 0', color: '#aaa', fontSize: '0.82rem' }}>No attempts recorded yet.</p>
+                ) : (
+                  <div className="stats-table-wrapper">
+                    <table className="stats-table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>#</th>
+                          <th>Time</th>
+                          <th>Type</th>
+                          <th>Secs</th>
+                          <th>Correct</th>
+                          <th>Yours</th>
+                          <th>✓</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[...statRows].reverse().map((row, i) => {
+                          const originalIndex = statRows.length - 1 - i;
+                          return (
+                          <tr key={originalIndex} style={{ color: row.is_correct ? '#22c55e' : '#f87171' }}>
+                            <td>
+                              <button className="row-delete-btn" onClick={() => handleDeleteStatAt(originalIndex)} title="Remove">✕</button>
+                            </td>
+                            <td style={{ color: '#aaa' }}>{originalIndex + 1}</td>
+                            <td style={{ color: '#ccc' }}>{row.timestamp}</td>
+                            <td style={{ color: '#ccc' }}>{row.pinorder}</td>
+                            <td>{row.time_seconds !== '' ? row.time_seconds : '—'}</td>
+                            <td>{row.correct_memo}</td>
+                            <td>{row.input_memo}</td>
+                            <td>{row.is_correct ? '✓' : '✗'}</td>
+                          </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+        </div>
       </div>
-
-      <Clock
-        random={random}
-        side={side}
-        flipType={flipType}
-        hideHourIndicators={hideHourIndicatorsState}
-        onFlip={flip}
-      />
-    </>
+      <footer style={{ textAlign: 'center', padding: '1rem 0 0.75rem', color: '#666', fontSize: '0.75rem' }}>
+        Clock design based on <a href="https://sanya.sweetduet.info/cube/7simul_trainer/" target="_blank" rel="noopener noreferrer" style={{ color: '#888' }}>Kusano</a>
+        {' · '}
+        Logic adapted from <a href="https://joshm2.github.io/7-Simul/" target="_blank" rel="noopener noreferrer" style={{ color: '#888' }}>JoshM2</a> and <a href="https://github.com/cafox2003" target="_blank" rel="noopener noreferrer" style={{ color: '#888' }}>Caleb Fox</a>
+      </footer>
+    </div>
   );
 }
