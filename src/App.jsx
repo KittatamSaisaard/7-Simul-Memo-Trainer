@@ -51,7 +51,7 @@ function InfoTooltip({ text }) {
   return (
     <span className="help-wrapper" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} style={{ position: 'relative', top: '-1px' }}>
       <button className="help-btn" tabIndex={-1} style={{ width: '1.1rem', height: '1.1rem', fontSize: '0.7rem' }}>?</button>
-      {open && <div className="help-popup" style={{ fontSize: '0.8rem', width: '200px', right: 'auto', left: 0 }}>{text}</div>}
+      {open && <div className="help-popup" style={{ fontSize: '0.8rem', width: '1250px', right: 'auto', left: 0 }}>{text}</div>}
     </span>
   );
 }
@@ -134,6 +134,21 @@ export default function App() {
   const [showInputButtons, setShowInputButtons] = useState(isMobile);
   const [showMoreSettings, setShowMoreSettings] = useState(false);
   const [showStatSettings, setShowStatSettings] = useState(false);
+  const settingsBodyRef = useRef(null);
+  const statSettingsBodyRef = useRef(null);
+
+  useEffect(() => {
+    if (showMoreSettings && settingsBodyRef.current) {
+      setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 125);
+    }
+  }, [showMoreSettings]);
+
+  useEffect(() => {
+    if (showStatSettings && statSettingsBodyRef.current) {
+      setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 125);
+    }
+  }, [showStatSettings]);
+
   const [activeSession, setActiveSessionState] = useState(() => getActiveSession());
   const [stats, setStats] = useState(() => computeInstantStats());
   const [statRows, setStatRows] = useState(() => loadStats());
@@ -668,14 +683,13 @@ export default function App() {
           {/* Settings accordion */}
           <div>
             <button
-              className="accordion-btn"
-              style={{ borderRadius: showMoreSettings ? `${10}px ${10}px 0 0` : undefined }}
+              className={`accordion-btn${showMoreSettings ? ' open' : ''}`}
               onClick={() => setShowMoreSettings(v => !v)}
             >
               {showMoreSettings ? '▾' : '▸'} Settings
             </button>
-            {showMoreSettings && (
-              <div className="accordion-body">
+            <div ref={settingsBodyRef} className={`accordion-body${showMoreSettings ? ' open' : ''}`}>
+              <div className="accordion-body-inner">
                 <div>
                   <b style={{ fontSize: '0.85rem' }}>Memo Input Characters</b> <InfoTooltip text="Only letters A–Z and digits 0–9 are accepted." />
                   <div className="setting-row" style={{ marginTop: '0.3rem' }}>
@@ -712,20 +726,19 @@ export default function App() {
                   </select>
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Stats settings accordion */}
           <div>
             <button
-              className="accordion-btn"
-              style={{ borderRadius: showStatSettings ? `${10}px ${10}px 0 0` : undefined }}
+              className={`accordion-btn${showStatSettings ? ' open' : ''}`}
               onClick={() => setShowStatSettings(v => !v)}
             >
               {showStatSettings ? '▾' : '▸'} Stats Settings
             </button>
-            {showStatSettings && (
-              <div className="accordion-body">
+            <div ref={statSettingsBodyRef} className={`accordion-body${showStatSettings ? ' open' : ''}`}>
+              <div className="accordion-body-inner">
                 <label className="setting-row">
                   <input type="checkbox" checked={practiceMode} onChange={e => handlePracticeModeChange(e.target.checked)} />
                   <span><b>Practice mode</b> <InfoTooltip text="Attempts will not count towards your stats." /></span>
@@ -788,7 +801,7 @@ export default function App() {
                   </div>
                 )}
               </div>
-            )}
+            </div>
           </div>
 
         </div>
@@ -796,7 +809,7 @@ export default function App() {
       <footer style={{ textAlign: 'center', padding: '1rem 0 0.75rem', color: '#666', fontSize: '0.75rem' }}>
         Clock design based on <a href="https://sanya.sweetduet.info/cube/7simul_trainer/" target="_blank" rel="noopener noreferrer" style={{ color: '#888' }}>Kusano</a>
         {' · '}
-        Logic adapted from <a href="https://joshm2.github.io/7-Simul/" target="_blank" rel="noopener noreferrer" style={{ color: '#888' }}>JoshM2</a> and <a href="https://github.com/cafox2003" target="_blank" rel="noopener noreferrer" style={{ color: '#888' }}>Caleb Fox</a>
+        Logic adapted from <a href="https://joshm2.github.io/7-Simul/" target="_blank" rel="noopener noreferrer" style={{ color: '#888' }}>JoshM2</a> and <a href="https://github.com/cafox12503" target="_blank" rel="noopener noreferrer" style={{ color: '#888' }}>Caleb Fox</a>
       </footer>
     </div>
   );
