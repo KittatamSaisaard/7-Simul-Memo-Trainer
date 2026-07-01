@@ -152,6 +152,28 @@ export function swapSides(state, flipType = 'x2') {
   return r;
 }
 
+// [a,b,c,d,e,f,g,h,i,j,k,l,m,n] → CW → [g,d,a,h,e,b,i,f,c,m,j,l,n,k]
+export function rotateArrayCW(arr) {
+  const r = [...arr];
+  r[0]=arr[6]; r[1]=arr[3]; r[2]=arr[0];
+  r[3]=arr[7];              r[5]=arr[1];
+  r[6]=arr[8]; r[7]=arr[5]; r[8]=arr[2];
+  // r[4] and r[11] unchanged
+  r[9]=arr[12]; r[10]=arr[9]; r[12]=arr[13]; r[13]=arr[10];
+  return r;
+}
+
+// [a,b,c,d,e,f,g,h,i,j,k,l,m,n] → CCW → [c,f,i,b,e,h,a,d,g,k,n,l,j,m]
+export function rotateArrayCCW(arr) {
+  const r = [...arr];
+  r[0]=arr[2]; r[1]=arr[5]; r[2]=arr[8];
+  r[3]=arr[1];              r[5]=arr[7];
+  r[6]=arr[0]; r[7]=arr[3]; r[8]=arr[6];
+  // r[4] and r[11] unchanged
+  r[9]=arr[10]; r[10]=arr[13]; r[12]=arr[9]; r[13]=arr[12];
+  return r;
+}
+
 export function computeMemoForPairs(random, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft) {
   let realMemo = '';
   for (const i of order[0]) {

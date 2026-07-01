@@ -201,6 +201,12 @@ body {
   cursor: pointer;
   text-align: left;
   width: 100%;
+  transition: border-radius 0s 0.15s;
+}
+
+.accordion-btn.open {
+  border-radius: 10px 10px 0 0;
+  transition: border-radius 0s;
 }
 
 .accordion-btn:hover {
@@ -212,11 +218,22 @@ body {
   border: 1px solid var(--border);
   border-top: none;
   border-radius: 0 0 var(--radius) var(--radius);
-  padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   font-size: 0.85rem;
+  overflow: hidden;
+  max-height: 0;
+  padding: 0 1rem;
+  border-width: 0;
+  transition: max-height 0.15s ease, padding 0.15s ease, border-width 0s 0.15s;
+}
+
+.accordion-body.open {
+  max-height: 2000px;
+  padding: 0.75rem 1rem;
+  border-width: 1px;
+  transition: max-height 0.3s ease, padding 0.3s ease, border-width 0s;
 }
 
 .accordion-body label {
@@ -234,6 +251,25 @@ body {
   align-items: center;
   gap: 0.4rem;
   flex-wrap: wrap;
+}
+
+.rotate-btn {
+  font-size: 1.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.rotate-btn:hover {
+  background: #4a4a4a;
 }
 
 .stat-action-btn {
@@ -461,7 +497,8 @@ input[type="radio"] {
 .five  { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(150deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
 .six   { width:calc(var(--circle-size)*(2/110)); height:calc(var(--circle-size)*(7/110)); border-radius:0; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(6/110))) rotate(180deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(49/110)); }
 
-/* x2 flip: swap double-line to six, reduce twelve to single line */
+/* x2 flip reference markers */
+/* twelve.single-marker: at 90°/270° rotations the single line is at twelve position */
 .twelve.single-marker {
   width: calc(var(--circle-size) * (2 / 110));
   height: calc(var(--circle-size) * (7 / 110));
@@ -469,6 +506,11 @@ input[type="radio"] {
   mask: none;
   -webkit-mask: none;
 }
+/* twelve.double-marker: at 90°/270° rotations the double red lines stay at twelve */
+.twelve.double-marker {
+  background-color: red !important;
+}
+/* six.double-marker: at 0°/180° rotations the double red lines move to six */
 .six.double-marker {
   width: calc(var(--circle-size) * (7 / 110));
   height: calc(var(--circle-size) * (10 / 110));
@@ -476,6 +518,7 @@ input[type="radio"] {
   transform-origin: calc(var(--circle-size) * (4 / 110)) calc(var(--circle-size) * (50 / 110));
   mask: linear-gradient(to right, #000 33%, transparent 33%, transparent 67%, #000 67%);
   -webkit-mask: linear-gradient(to right, #000 33%, transparent 33%, transparent 67%, #000 67%);
+  background-color: red !important;
 }
 .seven { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(210deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }
 .eight { width:calc(var(--circle-size)*(3/110)); aspect-ratio:1/1; border-radius:50%; position:absolute; transform:translate(calc(var(--circle-size)*(54/110)),calc(var(--circle-size)*(8/110))) rotate(240deg); transform-origin:calc(var(--circle-size)*(1/110)) calc(var(--circle-size)*(47/110)); }

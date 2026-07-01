@@ -6,6 +6,7 @@ import Toast from './components/Toast';
 import {
   checkPinOrder, generateScrambleText, scrambleconvert,
   computeMemoForPairs, swapSides, LETTER_MAPS, DEFAULT_PIN_ORDERS,
+  rotateArrayCW, rotateArrayCCW,
 } from './logic/clockLogic';
 import { celebrate } from './logic/celebration';
 import {
@@ -45,6 +46,14 @@ function getDefaultCheckedPairs(pinOrderStr, simultype) {
 }
 
 const ZERO_RANDOM = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+function transformCornersForBlack(n) {
+  return (12 - n) % 12;
+}
+
+function transformForBlack(arr) { // [a,b,c,d,e,f,g,h,i,j,k,l,m,n] -> [g,j,i,k,l,m,a,n,c,b,d,e,f,h]
+  return [transformCornersForBlack(arr[6]), arr[9], transformCornersForBlack(arr[8]), arr[10], arr[11], arr[12], transformCornersForBlack(arr[0]), arr[13], transformCornersForBlack(arr[2]), arr[8], arr[3], arr[4], arr[5], arr[7]];
+}
 
 function InfoTooltip({ text }) {
   const [open, setOpen] = useState(false);
@@ -106,10 +115,12 @@ export default function App() {
   const [hideHourIndicatorsState, setHideHourIndicatorsState] = useState(() => getHideHourIndicators());
   const [swapM3M4, setSwapM3M4] = useState(() => getSwapM3M4());
   const [practiceMode, setPracticeModeState] = useState(() => isPracticeMode());
-  const [flipType, setFlipType] = useState(() => getFlipTypeForSimul(initSimultype));
+  const [flipType, setFlipType] = useState(() => localStorage.getItem('flipType') ?? getFlipTypeForSimul(initSimultype));
 
   const [side, setSide] = useState('white');
   const [random, setRandom] = useState(ZERO_RANDOM);
+  const [rotatedRandom, setRotatedRandom] = useState(ZERO_RANDOM);
+  const [blackRandom, setBlackRandom] = useState(() => transformForBlack(ZERO_RANDOM));
   const [scrambletext, setScrambletext] = useState('');
   const previousScrambleRef = useRef('');
   const hasCheckedRef = useRef(false);
@@ -134,6 +145,8 @@ export default function App() {
   const [showInputButtons, setShowInputButtons] = useState(isMobile);
   const [showMoreSettings, setShowMoreSettings] = useState(false);
   const [showStatSettings, setShowStatSettings] = useState(false);
+  const settingsBodyRef = useRef(null);
+  const statSettingsBodyRef = useRef(null);
   const [activeSession, setActiveSessionState] = useState(() => getActiveSession());
   const [stats, setStats] = useState(() => computeInstantStats());
   const [statRows, setStatRows] = useState(() => loadStats());
@@ -196,14 +209,40 @@ export default function App() {
     return memo;
   }
 
+  const [flipRotation, setFlipRotation] = useState(0);
   function flip() {
+    if (side === 'white') {
+      setFlipRotation(clockRotation);
+      const br = transformForBlack(random);
+      setBlackRandom(br);
+      console.log('flip to black, temp array:', br);
+    } else {
+      console.log('flip to white, array:', rotatedRandom);
+    }
     setSide(prev => prev === 'white' ? 'black' : 'white');
+  }
+
+  const [clockRotation, setClockRotation] = useState(0);
+  function rotateClock(delta, currentSide = side) {
+    setClockRotation(prev => prev + delta * 90);
+    if (currentSide === 'white') {
+      setRotatedRandom(prev => {
+        const next = delta > 0 ? rotateArrayCW(prev) : rotateArrayCCW(prev);
+        return next;
+      });
+    } else {
+      setBlackRandom(prev => {
+        const next = delta > 0 ? rotateArrayCW(prev) : rotateArrayCCW(prev);
+        return next;
+      });
+    }
   }
 
   const stateRef = useRef({});
   stateRef.current = {
     executionMode, memo, random, order, simultype, letterMap, checkedPairs,
     umoveLeft, dmoveLeft, scrambletext, timerEnabled, flipType, side, customChars, swapM3M4,
+    clockRotation,
   };
 
   function doScramble(rnd, sctext, execMode, ord, sim, lm, pairs, uL, dL, timerOn) {
@@ -213,6 +252,11 @@ export default function App() {
     setMemo('');
     setScrambletext(sctext);
     setRandom(rnd);
+    setRotatedRandom(rnd);
+    setClockRotation(prev => {
+      const mod = ((prev % 360) + 360) % 360;
+      return prev + (mod <= 180 ? -mod : 360 - mod);
+    });
     setSide('white');
     if (!execMode) {
       setMemoDisplay('Memo: ');
@@ -406,10 +450,36 @@ export default function App() {
 
   useEffect(() => {
     if (executionMode && order) {
-      const m = getMemo(random, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft);
+      let m;
+      if (side === 'black') {
+        // blackRandom is already transformed for the black face — call computeMemoForPairs directly
+        // to avoid swapSides being applied again inside getMemo
+       // m = computeMemoForPairs(blackRandom, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft);
+       console.log('blackRandom:', blackRandom);
+        m = getMemo(blackRandom, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft);
+        if (swapM3M4 && simultype !== 'BPaul' && m.length >= 5) {
+          const chars = m.replace(/ /g, '');
+          const swapped = chars.slice(0, 2) + chars[3] + chars[2] + chars.slice(4);
+          m = swapped.match(/.{1,2}/g).join(' ') + ' ';
+        }
+      } else {
+        m = getMemo(rotatedRandom, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft);
+      }
       setMemoDisplay('Memo: ' + m);
     }
-  }, [executionMode, random, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft]);
+  }, [executionMode, random, rotatedRandom, blackRandom, side, order, simultype, letterMap, checkedPairs, umoveLeft, dmoveLeft, swapM3M4]);
+
+  useEffect(() => {
+    if (showMoreSettings && settingsBodyRef.current) {
+      setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 125);
+    }
+  }, [showMoreSettings]);
+
+  useEffect(() => {
+    if (showStatSettings && statSettingsBodyRef.current) {
+      setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 125);
+    }
+  }, [showStatSettings]);
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -417,7 +487,21 @@ export default function App() {
       const s = stateRef.current;
       if (e.key === ' ') {
         e.preventDefault();
-        flip();
+        if (s.side === 'white') {
+          setFlipRotation(s.clockRotation);
+          const br = transformForBlack(s.random);
+          setBlackRandom(br);
+          console.log('flip to black, temp array:', br);
+        } else {
+          console.log('flip to white, array:', s.rotatedRandom);
+        }
+        setSide(prev => prev === 'white' ? 'black' : 'white');
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        rotateClock(-1, s.side);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        rotateClock(1, s.side);
       } else if (e.key === 's' || e.key === 'S') {
         scramble();
       } else if (e.key === 'Backspace' && !s.executionMode) {
@@ -504,6 +588,7 @@ export default function App() {
   function handleFlipTypeChange(newFlipType) {
     if (stateRef.current.side === 'black') flip();
     setFlipType(newFlipType);
+    localStorage.setItem('flipType', newFlipType);
     toast(`Flip type changed to ${newFlipType}`);
   }
 
@@ -536,13 +621,22 @@ export default function App() {
 
         {/* ── Left: Clock ── */}
         <div className="clock-panel">
-          <Clock
-            random={random}
-            side={side}
-            flipType={flipType}
-            hideHourIndicators={hideHourIndicatorsState}
-            onFlip={flip}
-          />
+          <div style={{ transform: `rotate(${clockRotation}deg)`, transition: 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}>
+            <Clock
+              random={random}
+              side={side}
+              flipType={flipType}
+              hideHourIndicators={hideHourIndicatorsState}
+              onFlip={flip}
+              clockRotation={clockRotation}
+              flipRotation={flipRotation}
+              rotatedRandom={rotatedRandom}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '0.5rem' }}>
+            <button className="rotate-btn" onClick={() => rotateClock(-1)} title="Rotate anti-clockwise (←)">↺</button>
+            <button className="rotate-btn" onClick={() => rotateClock(1)} title="Rotate clockwise (→)">↻</button>
+          </div>
         </div>
 
         {/* ── Right: Controls ── */}
@@ -668,14 +762,12 @@ export default function App() {
           {/* Settings accordion */}
           <div>
             <button
-              className="accordion-btn"
-              style={{ borderRadius: showMoreSettings ? `${10}px ${10}px 0 0` : undefined }}
+              className={`accordion-btn${showMoreSettings ? ' open' : ''}`}
               onClick={() => setShowMoreSettings(v => !v)}
             >
               {showMoreSettings ? '▾' : '▸'} Settings
             </button>
-            {showMoreSettings && (
-              <div className="accordion-body">
+            <div ref={settingsBodyRef} className={`accordion-body${showMoreSettings ? ' open' : ''}`}>
                 <div>
                   <b style={{ fontSize: '0.85rem' }}>Memo Input Characters</b> <InfoTooltip text="Only letters A–Z and digits 0–9 are accepted." />
                   <div className="setting-row" style={{ marginTop: '0.3rem' }}>
@@ -712,20 +804,17 @@ export default function App() {
                   </select>
                 </div>
               </div>
-            )}
           </div>
 
           {/* Stats settings accordion */}
           <div>
             <button
-              className="accordion-btn"
-              style={{ borderRadius: showStatSettings ? `${10}px ${10}px 0 0` : undefined }}
+              className={`accordion-btn${showStatSettings ? ' open' : ''}`}
               onClick={() => setShowStatSettings(v => !v)}
             >
               {showStatSettings ? '▾' : '▸'} Stats Settings
             </button>
-            {showStatSettings && (
-              <div className="accordion-body">
+            <div ref={statSettingsBodyRef} className={`accordion-body${showStatSettings ? ' open' : ''}`}>
                 <label className="setting-row">
                   <input type="checkbox" checked={practiceMode} onChange={e => handlePracticeModeChange(e.target.checked)} />
                   <span><b>Practice mode</b> <InfoTooltip text="Attempts will not count towards your stats." /></span>
@@ -788,7 +877,6 @@ export default function App() {
                   </div>
                 )}
               </div>
-            )}
           </div>
 
         </div>
