@@ -55,3 +55,7 @@ npm run preview   # Preview the production build locally
 Preferences and stats are stored in the browser's `localStorage`; they are not synced to an account or other browsers. Clearing browser storage can remove this data.
 
 Clock design: [Kusano](https://sanya.sweetduet.info/cube/7simul_trainer/). Logic adapted from [JoshM2](https://joshm2.github.io/7-Simul/) and [Caleb Fox](https://github.com/cafox12503).
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
